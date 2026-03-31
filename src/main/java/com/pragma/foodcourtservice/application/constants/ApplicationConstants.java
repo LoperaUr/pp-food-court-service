@@ -1,0 +1,20 @@
+package com.pragma.foodcourtservice.application.constants;
+
+public final class ApplicationConstants {
+
+    // Prevent instantiation
+    private ApplicationConstants() {}
+
+    // Messages
+    public static final String RESTAURANT_NAME_CANNOT_BE_BLANK = "Restaurant name cannot be blank";
+    public static final String RESTAURANT_NIT_CANNOT_BE_BLANK = "NIT cannot be blank";
+    public static final String RESTAURANT_NIT_MUST_BE_NUMERIC = "NIT must be numeric";
+    public static final String RESTAURANT_ADDRESS_CANNOT_BE_BLANK = "Address cannot be blank";
+    public static final String RESTAURANT_PHONE_CANNOT_BE_BLANK = "Phone cannot be blank";
+    public static final String RESTAURANT_PHONE_INVALID = "Phone must be numeric, maximum 13 characters, can contain +";
+    public static final String RESTAURANT_LOGO_CANNOT_BE_BLANK = "URL Logo cannot be blank";
+    public static final String RESTAURANT_OWNER_ID_CANNOT_BE_BLANK = "Owner ID cannot be blank";
+    public static final String RESTAURANT_OWNER_ID_MUST_BE_NUMERIC = "Owner ID must be numeric";
+    public static final String RESTAURANT_NAME_ONLY_NUMBERS = "Restaurant name cannot contain only numbers";
+
+}

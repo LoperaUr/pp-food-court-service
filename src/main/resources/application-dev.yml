@@ -12,3 +12,10 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  security:
+    jwt:
+      secret: 66df918f-c69c-4cc6-9be0-8172d2a4408b
+      expiration: 86400000
+
+user-service:
+  url: http://localhost:8081
