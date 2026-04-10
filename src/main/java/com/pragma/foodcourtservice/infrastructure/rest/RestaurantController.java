@@ -1,4 +1,4 @@
-package com.pragma.foodcourtservice.infraestructure.input.rest;
+package com.pragma.foodcourtservice.infrastructure.rest;
 
 import com.pragma.foodcourtservice.application.dto.RestaurantDTO;
 import com.pragma.foodcourtservice.application.handler.IRestaurantHandler;

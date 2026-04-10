@@ -1,5 +1,6 @@
-package com.pragma.foodcourtservice.infraestructure.output.security.helper;
+package com.pragma.foodcourtservice.infrastructure.output.security.helper;
 
+import com.pragma.foodcourtservice.domain.constants.DomainConstants;
 import io.jsonwebtoken.Claims;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -9,11 +10,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public record JwtAuthentication(Claims claims) implements Authentication {
+public record JwtAuthentication(Claims claims, String token) implements Authentication {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Object roleName = claims.get("role_name");
+        Object roleName = claims.get(DomainConstants.KEY_ROLE_NAME);
         if (roleName == null) {
             return Collections.emptyList();
         }
@@ -23,7 +24,7 @@ public record JwtAuthentication(Claims claims) implements Authentication {
 
     @Override
     public Object getCredentials() {
-        return null;
+        return token;
     }
 
     @Override
@@ -33,7 +34,7 @@ public record JwtAuthentication(Claims claims) implements Authentication {
 
     @Override
     public Object getPrincipal() {
-        return claims.get("sub");
+        return claims.getSubject();
     }
 
     @Override
@@ -43,12 +44,12 @@ public record JwtAuthentication(Claims claims) implements Authentication {
 
     @Override
     public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
-        throw new UnsupportedOperationException("No se puede cambiar el estado de autenticación");
+        throw new UnsupportedOperationException(DomainConstants.MSG_AUTHENTICATION_STATE_IMMUTABLE);
     }
 
     @Override
     public String getName() {
-        return (String) claims.get("sub");
+        return claims.getSubject();
     }
 }
 

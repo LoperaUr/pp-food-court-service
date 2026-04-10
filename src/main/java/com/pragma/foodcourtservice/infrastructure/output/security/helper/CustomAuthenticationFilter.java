@@ -1,9 +1,9 @@
-package com.pragma.foodcourtservice.infraestructure.output.security.helper;
+package com.pragma.foodcourtservice.infrastructure.output.security.helper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pragma.foodcourtservice.domain.constants.DomainConstants;
 import com.pragma.foodcourtservice.infrastructure.constants.InfrastructureConstants;
-import com.pragma.foodcourtservice.infraestructure.output.security.adapter.JwtServiceAdapter;
+import com.pragma.foodcourtservice.infrastructure.output.security.adapter.JwtServiceAdapter;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -71,7 +71,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            SecurityContextHolder.getContext().setAuthentication(new JwtAuthentication(claims));
+            SecurityContextHolder.getContext().setAuthentication(new JwtAuthentication(claims, token));
         } catch (Exception e) {
             setResponseProperties(response, HttpServletResponse.SC_FORBIDDEN, InfrastructureConstants.MSG_TOKEN_INVALID, request);
             return;

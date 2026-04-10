@@ -1,7 +1,7 @@
 package com.pragma.foodcourtservice.infrastructure.configuration;
 
 import com.pragma.foodcourtservice.infrastructure.constants.InfrastructureConstants;
-import com.pragma.foodcourtservice.infraestructure.output.security.helper.CustomAuthenticationFilter;
+import com.pragma.foodcourtservice.infrastructure.output.security.helper.CustomAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;

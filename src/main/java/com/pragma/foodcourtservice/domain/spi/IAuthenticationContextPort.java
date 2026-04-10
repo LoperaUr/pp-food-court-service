@@ -2,7 +2,7 @@ package com.pragma.foodcourtservice.domain.spi;
 
 import com.pragma.foodcourtservice.domain.model.User;
 
-public interface IUserServicePort {
-    User getUserById(Long userId);
+public interface IAuthenticationContextPort {
+    User getAuthenticatedUser();
 }
 

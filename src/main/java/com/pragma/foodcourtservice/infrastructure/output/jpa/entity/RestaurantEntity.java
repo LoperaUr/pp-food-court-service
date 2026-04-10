@@ -1,4 +1,4 @@
-package com.pragma.foodcourtservice.infraestructure.output.jpa.entity;
+package com.pragma.foodcourtservice.infrastructure.output.jpa.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

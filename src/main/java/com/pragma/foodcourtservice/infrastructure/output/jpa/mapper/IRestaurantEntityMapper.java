@@ -1,7 +1,7 @@
-package com.pragma.foodcourtservice.infraestructure.output.jpa.mapper;
+package com.pragma.foodcourtservice.infrastructure.output.jpa.mapper;
 
 import com.pragma.foodcourtservice.domain.model.Restaurant;
-import com.pragma.foodcourtservice.infraestructure.output.jpa.entity.RestaurantEntity;
+import com.pragma.foodcourtservice.infrastructure.output.jpa.entity.RestaurantEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;

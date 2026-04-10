@@ -1,6 +1,6 @@
-package com.pragma.foodcourtservice.infraestructure.output.jpa.repository;
+package com.pragma.foodcourtservice.infrastructure.output.jpa.repository;
 
-import com.pragma.foodcourtservice.infraestructure.output.jpa.entity.RestaurantEntity;
+import com.pragma.foodcourtservice.infrastructure.output.jpa.entity.RestaurantEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

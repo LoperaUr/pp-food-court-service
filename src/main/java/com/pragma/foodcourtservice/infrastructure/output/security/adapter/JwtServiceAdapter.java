@@ -1,4 +1,4 @@
-package com.pragma.foodcourtservice.infraestructure.output.security.adapter;
+package com.pragma.foodcourtservice.infrastructure.output.security.adapter;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

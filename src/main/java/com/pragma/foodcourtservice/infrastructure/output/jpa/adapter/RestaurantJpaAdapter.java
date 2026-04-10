@@ -1,9 +1,9 @@
-package com.pragma.foodcourtservice.infraestructure.output.jpa.adapter;
+package com.pragma.foodcourtservice.infrastructure.output.jpa.adapter;
 
 import com.pragma.foodcourtservice.domain.model.Restaurant;
 import com.pragma.foodcourtservice.domain.spi.IRestaurantPersistencePort;
-import com.pragma.foodcourtservice.infraestructure.output.jpa.mapper.IRestaurantEntityMapper;
-import com.pragma.foodcourtservice.infraestructure.output.jpa.repository.IRestaurantRepository;
+import com.pragma.foodcourtservice.infrastructure.output.jpa.mapper.IRestaurantEntityMapper;
+import com.pragma.foodcourtservice.infrastructure.output.jpa.repository.IRestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
