@@ -12,11 +12,12 @@ import org.springframework.stereotype.Service;
 public class RestaurantHandler implements IRestaurantHandler {
 
     private final IRestaurantServicePort restaurantServicePort;
-    private final IRestaurantMapper restaurantDTOMapper;
+    private final IRestaurantMapper restaurantMapper;
 
     @Override
     public void createRestaurant(RestaurantDTO restaurantDTO) {
-        Restaurant restaurant = restaurantDTOMapper.toEntity(restaurantDTO);
+        Restaurant restaurant = restaurantMapper.toEntity(restaurantDTO);
         restaurantServicePort.createRestaurant(restaurant);
     }
 }
+

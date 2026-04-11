@@ -10,4 +10,6 @@ import org.mapstruct.ReportingPolicy;
 
 public interface IRestaurantEntityMapper {
     RestaurantEntity toEntity(Restaurant restaurant);
+
+    Restaurant toRestaurant(RestaurantEntity restaurantEntity);
 }

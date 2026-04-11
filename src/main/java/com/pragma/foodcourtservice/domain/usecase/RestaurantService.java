@@ -26,6 +26,15 @@ public class RestaurantService implements IRestaurantServicePort {
         restaurantPersistencePort.saveRestaurant(restaurant);
     }
 
+    @Override
+    public Restaurant getRestaurantById(Long id) {
+        Restaurant restaurant = restaurantPersistencePort.getRestaurantById(id);
+        if (restaurant == null) {
+            throw new DomainException(DomainConstants.MSG_RESTAURANT_NOT_FOUND, HttpStatus.FORBIDDEN);
+        }
+        return restaurant;
+    }
+
     private void validateAdmin() {
         User currentUser = authenticationContextPort.getAuthenticatedUser();
 
