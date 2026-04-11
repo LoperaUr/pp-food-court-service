@@ -4,7 +4,7 @@ import com.pragma.foodcourtservice.domain.api.IRestaurantServicePort;
 import com.pragma.foodcourtservice.domain.spi.IAuthenticationContextPort;
 import com.pragma.foodcourtservice.domain.spi.IRestaurantPersistencePort;
 import com.pragma.foodcourtservice.domain.spi.IUserServicePort;
-import com.pragma.foodcourtservice.domain.usecase.UserService;
+import com.pragma.foodcourtservice.domain.usecase.RestaurantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +20,6 @@ public class BeanConfiguration {
 
     @Bean
     public IRestaurantServicePort restaurantServicePort() {
-        return new UserService(restaurantPersistencePort, userServicePort, authenticationContextPort);
+        return new RestaurantService(restaurantPersistencePort, userServicePort, authenticationContextPort);
     }
 }

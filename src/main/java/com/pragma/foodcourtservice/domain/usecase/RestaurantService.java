@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @RequiredArgsConstructor
-public class UserService implements IRestaurantServicePort {
+public class RestaurantService implements IRestaurantServicePort {
 
     private final IRestaurantPersistencePort restaurantPersistencePort;
     private final IUserServicePort userServicePort;
