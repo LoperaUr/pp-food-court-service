@@ -6,10 +6,7 @@ import com.pragma.foodcourtservice.application.handler.IDishHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/dishes")
@@ -22,5 +19,11 @@ public class DishController {
     public ResponseEntity<Void> createDish(@Valid @RequestBody DishDTO dishDTO) {
         dishHandler.createDish(dishDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateDish(@PathVariable Long id, @RequestBody DishDTO dishDTO) {
+        dishHandler.updateDish(id, dishDTO);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

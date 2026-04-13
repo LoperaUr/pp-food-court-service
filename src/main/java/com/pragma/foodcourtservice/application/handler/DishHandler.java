@@ -20,5 +20,12 @@ public class DishHandler implements IDishHandler {
         dishServicePort.createDish(dish);
     }
 
+    @Override
+    public void updateDish(Long id, DishDTO dishDTO) {
+        Dish dish = dishMapper.toDish(dishDTO);
+        dish.setId(id);
+        dishServicePort.updateDish(dish);
+    }
+
 
 }

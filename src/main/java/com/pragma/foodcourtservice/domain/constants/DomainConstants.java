@@ -16,6 +16,10 @@ public final class DomainConstants {
     public static final String MSG_USER_SERVICE_UNAVAILABLE = "User service unavailable";
     public static final String MSG_AUTHENTICATION_STATE_IMMUTABLE = "Authentication state cannot be changed";
     public static final String MSG_CATEGORY_NOT_FOUND = "Category not found";
+    public static final String MSG_DISH_NOT_FOUND = "Dish not found";
+    public static final String MSG_ONLY_OWNER_CAN_UPDATE_DISH = "Only the restaurant owner can update dishes for this restaurant";
+    public static final String MSG_PRICE_MUST_BE_GREATER_THAN_ZERO = "Dish price must be greater than zero";
+    public static final String MSG_OWNER_NOT_HAVE_RESTAURANT = "Owner does not have a restaurant";
 
 
     // Key Names

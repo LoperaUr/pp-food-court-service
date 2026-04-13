@@ -35,6 +35,15 @@ public class RestaurantService implements IRestaurantServicePort {
         return restaurant;
     }
 
+    @Override
+    public Restaurant getRestaurantByOwnerId(Long ownerId) {
+        Restaurant restaurant = restaurantPersistencePort.getRestaurantByOwnerId(ownerId);
+        if (restaurant == null) {
+            throw new DomainException(DomainConstants.MSG_OWNER_NOT_HAVE_RESTAURANT, HttpStatus.FORBIDDEN);
+        }
+        return restaurant;
+    }
+
     private void validateAdmin() {
         User currentUser = authenticationContextPort.getAuthenticatedUser();
 

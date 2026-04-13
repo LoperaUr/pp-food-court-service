@@ -9,4 +9,6 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface IDishEntityMapper {
     DishEntity toEntity(Dish restaurant);
+
+    Dish toDish(DishEntity dishEntity);
 }

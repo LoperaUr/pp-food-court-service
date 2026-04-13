@@ -28,7 +28,28 @@ public class DishService implements IDishServicePort {
 
         dish.setActive(true);
 
-        dishPersistencePort.createDish(dish);
+        dishPersistencePort.saveDish(dish);
+    }
+
+    @Override
+    public void updateDish(Dish dish) {
+        validatePrice(dish);
+        Long authIdResult = authenticationContextPort.getAuthenticatedUser().getId();
+        Restaurant restaurantResult = restaurantServicePort.getRestaurantByOwnerId(authIdResult);
+        Dish dishResult = getDishById(dish.getId());
+
+        if (!dishResult.getRestaurantId().equals(restaurantResult.getId()))
+            throw new DomainException(DomainConstants.MSG_ONLY_OWNER_CAN_UPDATE_DISH, HttpStatus.UNAUTHORIZED);
+
+        dishResult.setPrice(dish.getPrice());
+        dishResult.setDescription(dish.getDescription());
+
+        dishPersistencePort.saveDish(dishResult);
+    }
+
+    private void validatePrice(Dish dish) {
+        if (dish.getPrice() <= 0)
+            throw new DomainException(DomainConstants.MSG_PRICE_MUST_BE_GREATER_THAN_ZERO, HttpStatus.BAD_REQUEST);
     }
 
     private void validateCategory(Dish dish) {
@@ -38,9 +59,17 @@ public class DishService implements IDishServicePort {
     }
 
     private void validateDish(Dish dish) {
+        validatePrice(dish);
         Long authId = authenticationContextPort.getAuthenticatedUser().getId();
         Restaurant restaurant = restaurantServicePort.getRestaurantById(dish.getRestaurantId());
         if (!restaurant.getOwnerId().equals(authId))
             throw new DomainException(DomainConstants.MSG_ONLY_OWNER_CAN_CREATE_DISH, HttpStatus.UNAUTHORIZED);
+    }
+
+    private Dish getDishById(Long id) {
+        Dish dish = dishPersistencePort.getDishById(id);
+        if (dish == null)
+            throw new DomainException(DomainConstants.MSG_DISH_NOT_FOUND, HttpStatus.NOT_FOUND);
+        return dish;
     }
 }
