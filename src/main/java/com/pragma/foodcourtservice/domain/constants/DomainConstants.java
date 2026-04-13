@@ -15,6 +15,7 @@ public final class DomainConstants {
     public static final String MSG_USER_SERVICE_UNAUTHORIZED = "Not authorized to query user service";
     public static final String MSG_USER_SERVICE_UNAVAILABLE = "User service unavailable";
     public static final String MSG_AUTHENTICATION_STATE_IMMUTABLE = "Authentication state cannot be changed";
+    public static final String MSG_CATEGORY_NOT_FOUND = "Category not found";
 
 
     // Key Names
