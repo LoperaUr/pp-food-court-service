@@ -1,9 +1,9 @@
 package com.pragma.foodcourtservice.infrastructure.configuration;
 
-import com.pragma.foodcourtservice.infrastructure.constants.InfrastructureConstants;
 import com.pragma.foodcourtservice.infrastructure.output.security.helper.CustomAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -28,7 +28,8 @@ public class SecurityConfig {
                 .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(InfrastructureConstants.getPublicEndpoints().toArray(new String[0])).permitAll()
+                        .requestMatchers(HttpMethod.POST, "/restaurants").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/dishes").hasRole("OWNER")
                         .anyRequest().authenticated()
                 );
 
@@ -39,4 +40,3 @@ public class SecurityConfig {
 
 
 }
-

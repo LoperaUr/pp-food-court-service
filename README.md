@@ -12,7 +12,7 @@ Microservicio de gestion de plazoleta de comidas para restaurantes, platos, pedi
 | HU  | Endpoint / Regla                               | Estado |
 |-----|------------------------------------------------|--------|
 | #2  | Crear restaurante (ADMIN)                      | OK     |
-| #5  | Restriccion por rol para crear restaurante     | ~      |
+| #5  | Restriccion por rol para crear restaurante     | OK     |
 | #3  | Crear plato                                    | X      |
 | #4  | Actualizar plato                               | X      |
 | #7  | Activar/desactivar plato                       | X      |

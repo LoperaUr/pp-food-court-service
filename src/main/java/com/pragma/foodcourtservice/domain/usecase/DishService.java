@@ -21,10 +21,8 @@ public class DishService implements IDishServicePort {
     @Override
     public void createDish(Dish dish) {
         validateDish(dish);
-        dish.setActive(true);
 
         dishPersistencePort.createDish(dish);
-
     }
 
     private void validateDish(Dish dish) {
@@ -32,7 +30,5 @@ public class DishService implements IDishServicePort {
         Restaurant restaurant = restaurantServicePort.getRestaurantById(dish.getRestaurantId());
         if (!restaurant.getOwnerId().equals(authId))
             throw new DomainException(DomainConstants.MSG_ONLY_OWNER_CAN_CREATE_DISH, HttpStatus.UNAUTHORIZED);
-
-
     }
 }
