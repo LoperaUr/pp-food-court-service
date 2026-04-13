@@ -6,7 +6,7 @@ import com.pragma.foodcourtservice.domain.constants.DomainConstants;
 import com.pragma.foodcourtservice.domain.exception.DomainException;
 import com.pragma.foodcourtservice.domain.model.Dish;
 import com.pragma.foodcourtservice.domain.model.Restaurant;
-import com.pragma.foodcourtservice.domain.spi.IAuthenticationContextPort;
+import com.pragma.foodcourtservice.domain.spi.IAuthenticationServicePort;
 import com.pragma.foodcourtservice.domain.spi.IDishPersistencePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,7 +16,7 @@ public class DishService implements IDishServicePort {
 
     private final IDishPersistencePort dishPersistencePort;
     private final IRestaurantServicePort restaurantServicePort;
-    private final IAuthenticationContextPort authenticationContextPort;
+    private final IAuthenticationServicePort authenticationContextPort;
 
     @Override
     public void createDish(Dish dish) {

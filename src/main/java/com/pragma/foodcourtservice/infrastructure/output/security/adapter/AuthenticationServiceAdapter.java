@@ -2,7 +2,7 @@ package com.pragma.foodcourtservice.infrastructure.output.security.adapter;
 
 import com.pragma.foodcourtservice.domain.constants.DomainConstants;
 import com.pragma.foodcourtservice.domain.model.User;
-import com.pragma.foodcourtservice.domain.spi.IAuthenticationContextPort;
+import com.pragma.foodcourtservice.domain.spi.IAuthenticationServicePort;
 import com.pragma.foodcourtservice.infrastructure.output.security.helper.JwtAuthentication;
 import io.jsonwebtoken.Claims;
 import org.springframework.security.core.Authentication;
@@ -10,7 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AuthenticationContextAdapter implements IAuthenticationContextPort {
+public class AuthenticationServiceAdapter implements IAuthenticationServicePort {
 
     @Override
     public User getAuthenticatedUser() {

@@ -3,7 +3,7 @@ package com.pragma.foodcourtservice.infrastructure.output.externalservice.adapte
 import com.pragma.foodcourtservice.domain.constants.DomainConstants;
 import com.pragma.foodcourtservice.domain.exception.DomainException;
 import com.pragma.foodcourtservice.domain.model.User;
-import com.pragma.foodcourtservice.domain.spi.IUserServicePort;
+import com.pragma.foodcourtservice.domain.api.IUserServicePort;
 import com.pragma.foodcourtservice.infrastructure.constants.InfrastructureConstants;
 import com.pragma.foodcourtservice.infrastructure.output.externalservice.client.UserFeignClient;
 import com.pragma.foodcourtservice.infrastructure.output.externalservice.dto.UserDTO;
