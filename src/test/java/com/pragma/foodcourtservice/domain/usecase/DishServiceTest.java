@@ -19,12 +19,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -109,6 +111,115 @@ class DishServiceTest {
 
         assertEquals(DomainConstants.MSG_CATEGORY_NOT_FOUND, exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+        verify(dishPersistencePort, never()).saveDish(any(Dish.class));
+    }
+
+    @Test
+    void updateDishIsSuccessAndOnlyUpdatesPriceAndDescription() {
+        Dish updatedDish = DishBuilder.aDish()
+                .withId(1L)
+                .withName("Nombre cambiado")
+                .withCategoryId(99L)
+                .withDescription("Descripcion actualizada")
+                .withRestaurantId(99L)
+                .withUrlImage("https://image.test/changed.png")
+                .withActive(false)
+                .withPrice(45000L)
+                .build();
+
+        Dish persistedDish = DishBuilder.aDish()
+                .withId(1L)
+                .withName("Nombre original")
+                .withCategoryId(1L)
+                .withDescription("Descripcion original")
+                .withRestaurantId(1L)
+                .withUrlImage("https://image.test/original.png")
+                .withActive(true)
+                .withPrice(20000L)
+                .build();
+
+        when(authenticationContextPort.getAuthenticatedUser()).thenReturn(authUser);
+        when(restaurantServicePort.getRestaurantByOwnerId(1L)).thenReturn(restaurant);
+        when(dishPersistencePort.getDishById(1L)).thenReturn(persistedDish);
+
+        dishService.updateDish(updatedDish);
+
+        ArgumentCaptor<Dish> dishCaptor = ArgumentCaptor.forClass(Dish.class);
+        verify(dishPersistencePort).saveDish(dishCaptor.capture());
+
+        Dish savedDish = dishCaptor.getValue();
+        assertAll(
+                () -> assertEquals(persistedDish.getId(), savedDish.getId()),
+                () -> assertEquals(persistedDish.getName(), savedDish.getName()),
+                () -> assertEquals(persistedDish.getCategoryId(), savedDish.getCategoryId()),
+                () -> assertEquals(updatedDish.getDescription(), savedDish.getDescription()),
+                () -> assertEquals(persistedDish.getRestaurantId(), savedDish.getRestaurantId()),
+                () -> assertEquals(persistedDish.getUrlImage(), savedDish.getUrlImage()),
+                () -> assertEquals(persistedDish.isActive(), savedDish.isActive()),
+                () -> assertEquals(updatedDish.getPrice(), savedDish.getPrice())
+        );
+    }
+
+    @Test
+    void updateDishThrowsWhenPriceIsNotValid() {
+        Dish invalidDish = DishBuilder.aDish()
+                .withId(1L)
+                .withPrice(0L)
+                .build();
+
+        DomainException exception = assertThrows(DomainException.class,
+                () -> dishService.updateDish(invalidDish));
+
+        assertEquals(DomainConstants.MSG_PRICE_MUST_BE_GREATER_THAN_ZERO, exception.getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getHttpStatus());
+        verifyNoInteractions(authenticationContextPort, restaurantServicePort, dishPersistencePort);
+    }
+
+    @Test
+    void updateDishThrowsWhenDishNotFound() {
+        Dish updatedDish = DishBuilder.aDish()
+                .withId(1L)
+                .withPrice(25000L)
+                .build();
+
+        when(authenticationContextPort.getAuthenticatedUser()).thenReturn(authUser);
+        when(restaurantServicePort.getRestaurantByOwnerId(1L)).thenReturn(restaurant);
+        when(dishPersistencePort.getDishById(1L)).thenReturn(null);
+
+        DomainException exception = assertThrows(DomainException.class,
+                () -> dishService.updateDish(updatedDish));
+
+        assertEquals(DomainConstants.MSG_DISH_NOT_FOUND, exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+        verify(dishPersistencePort, never()).saveDish(any(Dish.class));
+    }
+
+    @Test
+    void updateDishThrowsWhenAuthenticatedUserDoesNotOwnTheRestaurant() {
+        Dish updatedDish = DishBuilder.aDish()
+                .withId(1L)
+                .withPrice(25000L)
+                .build();
+
+        Restaurant otherRestaurant = RestaurantBuilder.aRestaurant()
+                .withId(2L)
+                .withOwnerId(1L)
+                .build();
+
+        Dish persistedDish = DishBuilder.aDish()
+                .withId(1L)
+                .withRestaurantId(1L)
+                .build();
+
+        when(authenticationContextPort.getAuthenticatedUser()).thenReturn(authUser);
+        when(restaurantServicePort.getRestaurantByOwnerId(1L)).thenReturn(otherRestaurant);
+        when(dishPersistencePort.getDishById(1L)).thenReturn(persistedDish);
+
+        DomainException exception = assertThrows(DomainException.class,
+                () -> dishService.updateDish(updatedDish));
+
+        assertEquals(DomainConstants.MSG_ONLY_OWNER_CAN_UPDATE_DISH, exception.getMessage());
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getHttpStatus());
         verify(dishPersistencePort, never()).saveDish(any(Dish.class));
     }
 }
