@@ -1,6 +1,7 @@
 package com.pragma.foodcourtservice.application.handler;
 
 import com.pragma.foodcourtservice.application.dto.DishDTO;
+import com.pragma.foodcourtservice.application.dto.DishStatusDTO;
 import com.pragma.foodcourtservice.application.mapper.IDishMapper;
 import com.pragma.foodcourtservice.domain.api.IDishServicePort;
 import com.pragma.foodcourtservice.domain.model.Dish;
@@ -27,5 +28,9 @@ public class DishHandler implements IDishHandler {
         dishServicePort.updateDish(dish);
     }
 
+    @Override
+    public void updateDishStatus(Long id, DishStatusDTO dishStatusDTO) {
+        dishServicePort.updateDishStatus(id, dishStatusDTO.isActive());
+    }
 
 }

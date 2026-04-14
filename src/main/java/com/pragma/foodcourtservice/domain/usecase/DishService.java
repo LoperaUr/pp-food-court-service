@@ -10,6 +10,7 @@ import com.pragma.foodcourtservice.domain.model.Restaurant;
 import com.pragma.foodcourtservice.domain.spi.IAuthenticationServicePort;
 import com.pragma.foodcourtservice.domain.spi.ICategoryPersistencePort;
 import com.pragma.foodcourtservice.domain.spi.IDishPersistencePort;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
@@ -24,7 +25,7 @@ public class DishService implements IDishServicePort {
     @Override
     public void createDish(Dish dish) {
         validateDish(dish);
-        validateCategory(dish);
+        validateCategoryExist(dish);
 
         dish.setActive(true);
 
@@ -33,13 +34,8 @@ public class DishService implements IDishServicePort {
 
     @Override
     public void updateDish(Dish dish) {
-        validatePrice(dish);
-        Long authIdResult = authenticationContextPort.getAuthenticatedUser().getId();
-        Restaurant restaurantResult = restaurantServicePort.getRestaurantByOwnerId(authIdResult);
-        Dish dishResult = getDishById(dish.getId());
-
-        if (!dishResult.getRestaurantId().equals(restaurantResult.getId()))
-            throw new DomainException(DomainConstants.MSG_ONLY_OWNER_CAN_UPDATE_DISH, HttpStatus.UNAUTHORIZED);
+        validateDishPrice(dish);
+        Dish dishResult = getDishByIdAndValidateOwn(dish.getId());
 
         dishResult.setPrice(dish.getPrice());
         dishResult.setDescription(dish.getDescription());
@@ -47,19 +43,42 @@ public class DishService implements IDishServicePort {
         dishPersistencePort.saveDish(dishResult);
     }
 
-    private void validatePrice(Dish dish) {
+    @Override
+    public void updateDishStatus(Long dishId, boolean active) {
+        Dish dishResult = getDishByIdAndValidateOwn(dishId);
+
+        dishResult.setActive(active);
+
+        dishPersistencePort.saveDish(dishResult);
+    }
+
+    private @NonNull Dish getDishByIdAndValidateOwn(Long dishId) {
+        Long authId = authenticationContextPort.getAuthenticatedUser().getId();
+        Restaurant restaurantResult = restaurantServicePort.getRestaurantByOwnerId(authId);
+        Dish dishResult = getDishById(dishId);
+
+        validateRestaurantOwnership(restaurantResult, dishResult);
+        return dishResult;
+    }
+
+    private void validateRestaurantOwnership(Restaurant restaurant, Dish dish) {
+        if (!dish.getRestaurantId().equals(restaurant.getId()))
+            throw new DomainException(DomainConstants.MSG_ONLY_OWNER_CAN_UPDATE_DISH, HttpStatus.UNAUTHORIZED);
+    }
+
+    private void validateDishPrice(Dish dish) {
         if (dish.getPrice() <= 0)
             throw new DomainException(DomainConstants.MSG_PRICE_MUST_BE_GREATER_THAN_ZERO, HttpStatus.BAD_REQUEST);
     }
 
-    private void validateCategory(Dish dish) {
+    private void validateCategoryExist(Dish dish) {
         Category category = categoryPersistencePort.getCategoryById(dish.getCategoryId());
         if (category == null)
             throw new DomainException(DomainConstants.MSG_CATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
     private void validateDish(Dish dish) {
-        validatePrice(dish);
+        validateDishPrice(dish);
         Long authId = authenticationContextPort.getAuthenticatedUser().getId();
         Restaurant restaurant = restaurantServicePort.getRestaurantById(dish.getRestaurantId());
         if (!restaurant.getOwnerId().equals(authId))

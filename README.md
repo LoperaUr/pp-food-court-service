@@ -14,8 +14,8 @@ Microservicio de gestion de plazoleta de comidas para restaurantes, platos, pedi
 | #2  | Crear restaurante (ADMIN)                      | OK     |
 | #5  | Restriccion por rol para crear restaurante     | OK     |
 | #3  | Crear plato                                    | OK     |
-| #4  | Actualizar plato                               | X      |
-| #7  | Activar/desactivar plato                       | X      |
+| #4  | Actualizar plato                               | OK     |
+| #7  | Activar/desactivar plato                       | TDD    |
 | #9  | Listar restaurantes                            | X      | 
 | #10 | Listar menu por restaurante                    | X      |
 | #11 | Crear pedido                                   | X      |

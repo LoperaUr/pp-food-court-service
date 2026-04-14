@@ -222,5 +222,90 @@ class DishServiceTest {
         assertEquals(HttpStatus.UNAUTHORIZED, exception.getHttpStatus());
         verify(dishPersistencePort, never()).saveDish(any(Dish.class));
     }
+
+    @Test
+    void updateDishStatusToActiveTrueIsSuccess() {
+        Dish persistedDish = DishBuilder.aDish()
+                .withId(1L)
+                .withActive(false)
+                .withRestaurantId(1L)
+                .build();
+
+        when(authenticationContextPort.getAuthenticatedUser()).thenReturn(authUser);
+        when(restaurantServicePort.getRestaurantByOwnerId(1L)).thenReturn(restaurant);
+        when(dishPersistencePort.getDishById(1L)).thenReturn(persistedDish);
+
+        dishService.updateDishStatus(1L, true);
+
+        ArgumentCaptor<Dish> dishCaptor = ArgumentCaptor.forClass(Dish.class);
+        verify(dishPersistencePort).saveDish(dishCaptor.capture());
+
+        Dish savedDish = dishCaptor.getValue();
+        assertTrue(savedDish.isActive());
+        assertEquals(1L, savedDish.getId());
+        assertEquals(1L, savedDish.getRestaurantId());
+    }
+
+    @Test
+    void updateDishStatusToActiveFalseIsSuccess() {
+        Dish persistedDish = DishBuilder.aDish()
+                .withId(2L)
+                .withActive(true)
+                .withRestaurantId(1L)
+                .build();
+
+        when(authenticationContextPort.getAuthenticatedUser()).thenReturn(authUser);
+        when(restaurantServicePort.getRestaurantByOwnerId(1L)).thenReturn(restaurant);
+        when(dishPersistencePort.getDishById(2L)).thenReturn(persistedDish);
+
+        dishService.updateDishStatus(2L, false);
+
+        ArgumentCaptor<Dish> dishCaptor = ArgumentCaptor.forClass(Dish.class);
+        verify(dishPersistencePort).saveDish(dishCaptor.capture());
+
+        Dish savedDish = dishCaptor.getValue();
+        assertFalse(savedDish.isActive());
+        assertEquals(2L, savedDish.getId());
+        assertEquals(1L, savedDish.getRestaurantId());
+    }
+
+    @Test
+    void updateDishStatusThrowsWhenDishNotFound() {
+        when(authenticationContextPort.getAuthenticatedUser()).thenReturn(authUser);
+        when(restaurantServicePort.getRestaurantByOwnerId(1L)).thenReturn(restaurant);
+        when(dishPersistencePort.getDishById(5L)).thenReturn(null);
+
+        DomainException exception = assertThrows(DomainException.class,
+                () -> dishService.updateDishStatus(5L, true));
+
+        assertEquals(DomainConstants.MSG_DISH_NOT_FOUND, exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+        verify(dishPersistencePort, never()).saveDish(any(Dish.class));
+    }
+
+    @Test
+    void updateDishStatusThrowsWhenAuthenticatedUserDoesNotOwnTheRestaurant() {
+        Dish persistedDish = DishBuilder.aDish()
+                .withId(3L)
+                .withActive(true)
+                .withRestaurantId(1L)
+                .build();
+
+        Restaurant otherRestaurant = RestaurantBuilder.aRestaurant()
+                .withId(2L)
+                .withOwnerId(1L)
+                .build();
+
+        when(authenticationContextPort.getAuthenticatedUser()).thenReturn(authUser);
+        when(restaurantServicePort.getRestaurantByOwnerId(1L)).thenReturn(otherRestaurant);
+        when(dishPersistencePort.getDishById(3L)).thenReturn(persistedDish);
+
+        DomainException exception = assertThrows(DomainException.class,
+                () -> dishService.updateDishStatus(3L, false));
+
+        assertEquals(DomainConstants.MSG_ONLY_OWNER_CAN_UPDATE_DISH, exception.getMessage());
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getHttpStatus());
+        verify(dishPersistencePort, never()).saveDish(any(Dish.class));
+    }
 }
 
