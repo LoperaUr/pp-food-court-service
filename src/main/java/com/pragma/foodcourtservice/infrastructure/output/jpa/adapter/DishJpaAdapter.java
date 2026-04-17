@@ -34,7 +34,7 @@ public class DishJpaAdapter implements IDishPersistencePort {
     public PageModel<Dish> getDishesByRestaurant(Long id, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
 
-        Page<DishEntity> pageResult = dishRepository.findByRestaurantId(id, pageRequest);
+        Page<DishEntity> pageResult = dishRepository.findByRestaurantIdAndActiveIsTrue(id, pageRequest);
 
         return dishEntityMapper.toPageModel(pageResult);
     }
@@ -43,7 +43,7 @@ public class DishJpaAdapter implements IDishPersistencePort {
     public PageModel<Dish> getDishesByRestaurantAndCategoryId(Long id, Long categoryId, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
 
-        Page<DishEntity> pageResult = dishRepository.findByRestaurantIdAndCategoryId(id, categoryId, pageRequest);
+        Page<DishEntity> pageResult = dishRepository.findByRestaurantIdAndCategoryIdAndActiveIsTrue(id, categoryId, pageRequest);
 
         return dishEntityMapper.toPageModel(pageResult);
     }
