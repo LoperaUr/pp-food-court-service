@@ -1,11 +1,13 @@
 package com.pragma.foodcourtservice.application.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.pragma.foodcourtservice.application.constants.ApplicationConstants;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RestaurantDTO {
 
     private Long id;

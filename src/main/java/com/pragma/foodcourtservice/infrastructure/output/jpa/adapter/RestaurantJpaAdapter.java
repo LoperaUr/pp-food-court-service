@@ -1,13 +1,18 @@
 package com.pragma.foodcourtservice.infrastructure.output.jpa.adapter;
 
+import com.pragma.foodcourtservice.domain.model.PageModel;
 import com.pragma.foodcourtservice.domain.model.Restaurant;
 import com.pragma.foodcourtservice.domain.spi.IRestaurantPersistencePort;
 import com.pragma.foodcourtservice.infrastructure.output.jpa.entity.RestaurantEntity;
 import com.pragma.foodcourtservice.infrastructure.output.jpa.mapper.IRestaurantEntityMapper;
 import com.pragma.foodcourtservice.infrastructure.output.jpa.repository.IRestaurantRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class RestaurantJpaAdapter implements IRestaurantPersistencePort {
@@ -30,5 +35,20 @@ public class RestaurantJpaAdapter implements IRestaurantPersistencePort {
     public Restaurant getRestaurantByOwnerId(Long ownerId) {
         RestaurantEntity restaurant = restaurantRepository.findByOwnerId(ownerId).orElse(null);
         return restaurantEntityMapper.toRestaurant(restaurant);
+    }
+
+    @Override
+    public PageModel<Restaurant> getRestaurants(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<RestaurantEntity> pageResult = restaurantRepository.findAll(pageRequest);
+
+        PageModel<Restaurant> restaurantPageModel = new PageModel<>();
+        restaurantPageModel.setContent(restaurantEntityMapper.toRestaurantList(pageResult.getContent()));
+        restaurantPageModel.setPageNumber(pageResult.getNumber());
+        restaurantPageModel.setPageSize(pageResult.getSize());
+        restaurantPageModel.setTotalElements(pageResult.getTotalElements());
+        restaurantPageModel.setTotalPages(pageResult.getTotalPages());
+
+         return restaurantPageModel;
     }
 }

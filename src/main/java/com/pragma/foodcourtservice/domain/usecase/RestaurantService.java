@@ -3,6 +3,7 @@ package com.pragma.foodcourtservice.domain.usecase;
 import com.pragma.foodcourtservice.domain.api.IRestaurantServicePort;
 import com.pragma.foodcourtservice.domain.constants.DomainConstants;
 import com.pragma.foodcourtservice.domain.exception.DomainException;
+import com.pragma.foodcourtservice.domain.model.PageModel;
 import com.pragma.foodcourtservice.domain.model.Restaurant;
 import com.pragma.foodcourtservice.domain.model.Role;
 import com.pragma.foodcourtservice.domain.model.User;
@@ -42,6 +43,19 @@ public class RestaurantService implements IRestaurantServicePort {
             throw new DomainException(DomainConstants.MSG_OWNER_NOT_HAVE_RESTAURANT, HttpStatus.FORBIDDEN);
         }
         return restaurant;
+    }
+
+    @Override
+    public PageModel<Restaurant> getRestaurants(int page, int size) {
+        PageModel<Restaurant> restaurants = restaurantPersistencePort.getRestaurants(page, size);
+        for (Restaurant restaurant : restaurants.getContent()) {
+            restaurant.setId(null);
+            restaurant.setNit(null);
+            restaurant.setPhone(null);
+            restaurant.setAddress(null);
+            restaurant.setOwnerId(null);
+        }
+        return restaurants;
     }
 
     private void validateAdmin() {
