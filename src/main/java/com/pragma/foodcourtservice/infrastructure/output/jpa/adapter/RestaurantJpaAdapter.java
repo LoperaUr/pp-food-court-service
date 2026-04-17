@@ -41,14 +41,6 @@ public class RestaurantJpaAdapter implements IRestaurantPersistencePort {
     public PageModel<Restaurant> getRestaurants(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<RestaurantEntity> pageResult = restaurantRepository.findAll(pageRequest);
-
-        PageModel<Restaurant> restaurantPageModel = new PageModel<>();
-        restaurantPageModel.setContent(restaurantEntityMapper.toRestaurantList(pageResult.getContent()));
-        restaurantPageModel.setPageNumber(pageResult.getNumber());
-        restaurantPageModel.setPageSize(pageResult.getSize());
-        restaurantPageModel.setTotalElements(pageResult.getTotalElements());
-        restaurantPageModel.setTotalPages(pageResult.getTotalPages());
-
-         return restaurantPageModel;
+        return restaurantEntityMapper.toRestaurantPageModel(pageResult);
     }
 }
