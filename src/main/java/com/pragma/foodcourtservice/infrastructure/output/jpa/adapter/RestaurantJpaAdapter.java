@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -39,7 +40,8 @@ public class RestaurantJpaAdapter implements IRestaurantPersistencePort {
 
     @Override
     public PageModel<Restaurant> getRestaurants(int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
+        Sort sort = Sort.by(Sort.Direction.ASC, "name");
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
         Page<RestaurantEntity> pageResult = restaurantRepository.findAll(pageRequest);
         return restaurantEntityMapper.toRestaurantPageModel(pageResult);
     }
