@@ -6,6 +6,7 @@ import com.pragma.foodcourtservice.domain.constants.DomainConstants;
 import com.pragma.foodcourtservice.domain.exception.DomainException;
 import com.pragma.foodcourtservice.domain.model.Category;
 import com.pragma.foodcourtservice.domain.model.Dish;
+import com.pragma.foodcourtservice.domain.model.PageModel;
 import com.pragma.foodcourtservice.domain.model.Restaurant;
 import com.pragma.foodcourtservice.domain.spi.IAuthenticationServicePort;
 import com.pragma.foodcourtservice.domain.spi.ICategoryPersistencePort;
@@ -25,7 +26,7 @@ public class DishService implements IDishServicePort {
     @Override
     public void createDish(Dish dish) {
         validateDish(dish);
-        validateCategoryExist(dish);
+        validateCategoryExist(dish.getCategoryId());
 
         dish.setActive(true);
 
@@ -52,6 +53,20 @@ public class DishService implements IDishServicePort {
         dishPersistencePort.saveDish(dishResult);
     }
 
+    @Override
+    public PageModel<Dish> getDishesByRestaurant(Long restaurantId, Long categoryId, int page, int size) {
+        Restaurant restaurant = restaurantServicePort.getRestaurantById(restaurantId);
+        if (restaurant == null)
+            throw new DomainException(DomainConstants.MSG_RESTAURANT_NOT_FOUND, HttpStatus.NOT_FOUND);
+
+        if (categoryId != 0) {
+            validateCategoryExist(categoryId);
+            return dishPersistencePort.getDishesByRestaurantAndCategoryId(restaurantId, categoryId, page, size);
+        }
+
+        return dishPersistencePort.getDishesByRestaurant(restaurantId, page, size);
+    }
+
     private @NonNull Dish getDishByIdAndValidateOwn(Long dishId) {
         Long authId = authenticationContextPort.getAuthenticatedUser().getId();
         Restaurant restaurantResult = restaurantServicePort.getRestaurantByOwnerId(authId);
@@ -71,8 +86,8 @@ public class DishService implements IDishServicePort {
             throw new DomainException(DomainConstants.MSG_PRICE_MUST_BE_GREATER_THAN_ZERO, HttpStatus.BAD_REQUEST);
     }
 
-    private void validateCategoryExist(Dish dish) {
-        Category category = categoryPersistencePort.getCategoryById(dish.getCategoryId());
+    private void validateCategoryExist(Long categoryId) {
+        Category category = categoryPersistencePort.getCategoryById(categoryId);
         if (category == null)
             throw new DomainException(DomainConstants.MSG_CATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND);
     }

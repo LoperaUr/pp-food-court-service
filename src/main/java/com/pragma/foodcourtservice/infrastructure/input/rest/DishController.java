@@ -2,6 +2,7 @@ package com.pragma.foodcourtservice.infrastructure.input.rest;
 
 import com.pragma.foodcourtservice.application.dto.DishDTO;
 import com.pragma.foodcourtservice.application.dto.DishStatusDTO;
+import com.pragma.foodcourtservice.application.dto.PageResponseDTO;
 import jakarta.validation.Valid;
 import com.pragma.foodcourtservice.application.handler.IDishHandler;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/dishes")
+@RequestMapping()
 @RequiredArgsConstructor
 public class DishController {
 
@@ -22,15 +23,30 @@ public class DishController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Void> updateDish(@PathVariable Long id, @RequestBody DishDTO dishDTO) {
+    @PutMapping("/dishes/{id}")
+    public ResponseEntity<Void> updateDish(
+            @PathVariable Long id,
+            @RequestBody DishDTO dishDTO) {
         dishHandler.updateDish(id, dishDTO);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PatchMapping("/{id}/status")
-    public ResponseEntity<Void> updateDishStatus(@PathVariable Long id, @Valid @RequestBody DishStatusDTO dishStatusDTO) {
+    @PatchMapping("/dishes/{id}/status")
+    public ResponseEntity<Void> updateDishStatus(
+            @PathVariable Long id,
+            @Valid @RequestBody DishStatusDTO dishStatusDTO) {
         dishHandler.updateDishStatus(id, dishStatusDTO);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/restaurants/{id}/dishes")
+    public ResponseEntity<PageResponseDTO<DishDTO>> getDishesByRestaurant(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") Long categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+            ) {
+        PageResponseDTO<DishDTO> response = dishHandler.getDishesByRestaurant(id, categoryId, page, size);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
