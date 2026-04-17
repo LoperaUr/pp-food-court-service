@@ -32,6 +32,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/dishes").hasRole("OWNER")
                         .requestMatchers(HttpMethod.PUT, "/dishes/**").hasRole("OWNER")
                         .requestMatchers(HttpMethod.GET, "/restaurants").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/orders").authenticated()
                         .anyRequest().permitAll()
                 );
 

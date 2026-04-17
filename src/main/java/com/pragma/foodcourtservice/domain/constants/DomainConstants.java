@@ -20,6 +20,10 @@ public final class DomainConstants {
     public static final String MSG_ONLY_OWNER_CAN_UPDATE_DISH = "Only the restaurant owner can update dishes for this restaurant";
     public static final String MSG_PRICE_MUST_BE_GREATER_THAN_ZERO = "Dish price must be greater than zero";
     public static final String MSG_OWNER_NOT_HAVE_RESTAURANT = "Owner does not have a restaurant";
+    public static final String MSG_ORDER_MUST_CONTAIN_AT_LEAST_ONE_DISH = "Order must contain at least one dish";
+    public static final String MSG_ORDER_MUST_HAVE_RESTAURANT_ID = "Order must have a restaurant ID";
+    public static final String MSG_CLIENT_ALREADY_HAS_ACTIVE_ORDER = "Client already has an active order";
+    public static final String MSG_DISH_DOES_NOT_BELONG_TO_RESTAURANT = "Dish does not belong to the selected restaurant";
 
 
     // Key Names

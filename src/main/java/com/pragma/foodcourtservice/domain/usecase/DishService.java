@@ -67,6 +67,14 @@ public class DishService implements IDishServicePort {
         return dishPersistencePort.getDishesByRestaurant(restaurantId, page, size);
     }
 
+    @Override
+    public Dish getDishById(Long id) {
+        Dish dish = dishPersistencePort.getDishById(id);
+        if (dish == null)
+            throw new DomainException(DomainConstants.MSG_DISH_NOT_FOUND, HttpStatus.NOT_FOUND);
+        return dish;
+    }
+
     private @NonNull Dish getDishByIdAndValidateOwn(Long dishId) {
         Long authId = authenticationContextPort.getAuthenticatedUser().getId();
         Restaurant restaurantResult = restaurantServicePort.getRestaurantByOwnerId(authId);
@@ -100,10 +108,4 @@ public class DishService implements IDishServicePort {
             throw new DomainException(DomainConstants.MSG_ONLY_OWNER_CAN_CREATE_DISH, HttpStatus.UNAUTHORIZED);
     }
 
-    private Dish getDishById(Long id) {
-        Dish dish = dishPersistencePort.getDishById(id);
-        if (dish == null)
-            throw new DomainException(DomainConstants.MSG_DISH_NOT_FOUND, HttpStatus.NOT_FOUND);
-        return dish;
-    }
 }

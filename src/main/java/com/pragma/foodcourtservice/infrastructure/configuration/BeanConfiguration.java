@@ -1,13 +1,16 @@
 package com.pragma.foodcourtservice.infrastructure.configuration;
 
 import com.pragma.foodcourtservice.domain.api.IDishServicePort;
+import com.pragma.foodcourtservice.domain.api.IOrderServicePort;
 import com.pragma.foodcourtservice.domain.api.IRestaurantServicePort;
+import com.pragma.foodcourtservice.domain.api.IUserServicePort;
 import com.pragma.foodcourtservice.domain.spi.IAuthenticationServicePort;
 import com.pragma.foodcourtservice.domain.spi.ICategoryPersistencePort;
 import com.pragma.foodcourtservice.domain.spi.IDishPersistencePort;
+import com.pragma.foodcourtservice.domain.spi.IOrderPersistencePort;
 import com.pragma.foodcourtservice.domain.spi.IRestaurantPersistencePort;
-import com.pragma.foodcourtservice.domain.api.IUserServicePort;
 import com.pragma.foodcourtservice.domain.usecase.DishService;
+import com.pragma.foodcourtservice.domain.usecase.OrderService;
 import com.pragma.foodcourtservice.domain.usecase.RestaurantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +25,7 @@ public class BeanConfiguration {
     private final IAuthenticationServicePort authenticationContextPort;
     private final IDishPersistencePort dishPersistencePort;
     private final ICategoryPersistencePort categoryPersistencePort;
+    private final IOrderPersistencePort orderPersistencePort;
 
     @Bean
     public IRestaurantServicePort restaurantServicePort() {
@@ -31,5 +35,10 @@ public class BeanConfiguration {
     @Bean
     public IDishServicePort dishServicePort() {
         return new DishService(dishPersistencePort, restaurantServicePort(), authenticationContextPort, categoryPersistencePort);
+    }
+
+    @Bean
+    public IOrderServicePort orderServicePort() {
+        return new OrderService(orderPersistencePort, restaurantServicePort(), authenticationContextPort, dishServicePort());
     }
 }

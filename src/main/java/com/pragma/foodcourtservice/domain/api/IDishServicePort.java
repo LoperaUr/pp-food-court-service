@@ -8,7 +8,9 @@ public interface IDishServicePort {
 
     void updateDish(Dish dish);
 
-     void updateDishStatus(Long dishId, boolean active);
+    void updateDishStatus(Long dishId, boolean active);
 
     PageModel<Dish> getDishesByRestaurant(Long id, Long categoryId, int page, int size);
+
+    Dish getDishById(Long id);
 }
