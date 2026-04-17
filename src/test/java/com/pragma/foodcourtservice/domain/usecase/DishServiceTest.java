@@ -5,6 +5,7 @@ import com.pragma.foodcourtservice.domain.constants.DomainConstants;
 import com.pragma.foodcourtservice.domain.exception.DomainException;
 import com.pragma.foodcourtservice.domain.model.Category;
 import com.pragma.foodcourtservice.domain.model.Dish;
+import com.pragma.foodcourtservice.domain.model.PageModel;
 import com.pragma.foodcourtservice.domain.model.Restaurant;
 import com.pragma.foodcourtservice.domain.model.User;
 import com.pragma.foodcourtservice.domain.spi.IAuthenticationServicePort;
@@ -306,6 +307,73 @@ class DishServiceTest {
         assertEquals(DomainConstants.MSG_ONLY_OWNER_CAN_UPDATE_DISH, exception.getMessage());
         assertEquals(HttpStatus.UNAUTHORIZED, exception.getHttpStatus());
         verify(dishPersistencePort, never()).saveDish(any(Dish.class));
+    }
+
+    @Test
+    void getDishesByRestaurantIsSuccessWithoutCategory() {
+        PageModel<Dish> expectedPage = buildPageModel();
+
+        when(restaurantServicePort.getRestaurantById(1L)).thenReturn(restaurant);
+        when(dishPersistencePort.getDishesByRestaurant(1L, 2, 10)).thenReturn(expectedPage);
+
+        PageModel<Dish> result = dishService.getDishesByRestaurant(1L, 0L, 2, 10);
+
+        assertEquals(expectedPage, result);
+        verify(dishPersistencePort).getDishesByRestaurant(1L, 2, 10);
+        verify(dishPersistencePort, never()).getDishesByRestaurantAndCategoryId(any(Long.class), any(Long.class), any(Integer.class), any(Integer.class));
+        verifyNoInteractions(categoryPersistencePort);
+    }
+
+    @Test
+    void getDishesByRestaurantIsSuccessWithCategory() {
+        PageModel<Dish> expectedPage = buildPageModel();
+
+        when(restaurantServicePort.getRestaurantById(1L)).thenReturn(restaurant);
+        when(categoryPersistencePort.getCategoryById(1L)).thenReturn(category);
+        when(dishPersistencePort.getDishesByRestaurantAndCategoryId(1L, 1L, 2, 10)).thenReturn(expectedPage);
+
+        PageModel<Dish> result = dishService.getDishesByRestaurant(1L, 1L, 2, 10);
+
+        assertEquals(expectedPage, result);
+        verify(categoryPersistencePort).getCategoryById(1L);
+        verify(dishPersistencePort).getDishesByRestaurantAndCategoryId(1L, 1L, 2, 10);
+        verify(dishPersistencePort, never()).getDishesByRestaurant(1L, 2, 10);
+    }
+
+    @Test
+    void getDishesByRestaurantThrowsWhenRestaurantNotFound() {
+        when(restaurantServicePort.getRestaurantById(1L)).thenReturn(null);
+
+        DomainException exception = assertThrows(DomainException.class,
+                () -> dishService.getDishesByRestaurant(1L, 0L, 2, 10));
+
+        assertEquals(DomainConstants.MSG_RESTAURANT_NOT_FOUND, exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+        verifyNoInteractions(categoryPersistencePort, dishPersistencePort);
+    }
+
+    @Test
+    void getDishesByRestaurantThrowsWhenCategoryNotFound() {
+        when(restaurantServicePort.getRestaurantById(1L)).thenReturn(restaurant);
+        when(categoryPersistencePort.getCategoryById(1L)).thenReturn(null);
+
+        DomainException exception = assertThrows(DomainException.class,
+                () -> dishService.getDishesByRestaurant(1L, 1L, 2, 10));
+
+        assertEquals(DomainConstants.MSG_CATEGORY_NOT_FOUND, exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+        verify(dishPersistencePort, never()).getDishesByRestaurant(any(Long.class), any(Integer.class), any(Integer.class));
+        verify(dishPersistencePort, never()).getDishesByRestaurantAndCategoryId(any(Long.class), any(Long.class), any(Integer.class), any(Integer.class));
+    }
+
+    private PageModel<Dish> buildPageModel() {
+        PageModel<Dish> pageModel = new PageModel<>();
+        pageModel.setContent(java.util.List.of(dish));
+        pageModel.setPageNumber(2);
+        pageModel.setPageSize(10);
+        pageModel.setTotalElements(1L);
+        pageModel.setTotalPages(1);
+        return pageModel;
     }
 }
 

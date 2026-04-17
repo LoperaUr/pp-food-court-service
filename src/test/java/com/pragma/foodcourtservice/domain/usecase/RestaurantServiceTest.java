@@ -3,6 +3,7 @@ package com.pragma.foodcourtservice.domain.usecase;
 import com.pragma.foodcourtservice.domain.constants.DomainConstants;
 import com.pragma.foodcourtservice.domain.exception.DomainException;
 import com.pragma.foodcourtservice.domain.api.IUserServicePort;
+import com.pragma.foodcourtservice.domain.model.PageModel;
 import com.pragma.foodcourtservice.domain.model.Restaurant;
 import com.pragma.foodcourtservice.domain.model.Role;
 import com.pragma.foodcourtservice.domain.model.User;
@@ -19,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -207,6 +209,52 @@ class RestaurantServiceTest {
 
         assertEquals(DomainConstants.MSG_OWNER_NOT_HAVE_RESTAURANT, exception.getMessage());
         assertEquals(HttpStatus.FORBIDDEN, exception.getHttpStatus());
+    }
+
+    @Test
+    void getRestaurantsIsSuccessAndMasksSensitiveFields() {
+        Restaurant restaurantOne = RestaurantBuilder.aRestaurant()
+                .withId(10L)
+                .withNit("900123456")
+                .withPhone("3009999999")
+                .withAddress("Calle 45")
+                .withOwnerId(20L)
+                .build();
+
+        Restaurant restaurantTwo = RestaurantBuilder.aRestaurant()
+                .withId(11L)
+                .withNit("800987654")
+                .withPhone("3018888888")
+                .withAddress("Carrera 12")
+                .withOwnerId(21L)
+                .build();
+
+        PageModel<Restaurant> pageModel = new PageModel<>();
+        pageModel.setContent(java.util.List.of(restaurantOne, restaurantTwo));
+        pageModel.setPageNumber(0);
+        pageModel.setPageSize(10);
+        pageModel.setTotalElements(2L);
+        pageModel.setTotalPages(1);
+
+        when(restaurantPersistencePort.getRestaurants(0, 10)).thenReturn(pageModel);
+
+        PageModel<Restaurant> result = restaurantService.getRestaurants(0, 10);
+
+        Restaurant firstRestaurant = result.getContent().iterator().next();
+        Restaurant secondRestaurant = result.getContent().get(1);
+
+        assertEquals(pageModel, result);
+        assertNull(firstRestaurant.getId());
+        assertNull(firstRestaurant.getNit());
+        assertNull(firstRestaurant.getPhone());
+        assertNull(firstRestaurant.getAddress());
+        assertNull(firstRestaurant.getOwnerId());
+        assertNull(secondRestaurant.getId());
+        assertNull(secondRestaurant.getNit());
+        assertNull(secondRestaurant.getPhone());
+        assertNull(secondRestaurant.getAddress());
+        assertNull(secondRestaurant.getOwnerId());
+        verify(restaurantPersistencePort).getRestaurants(0, 10);
     }
 
 
