@@ -27,4 +27,12 @@ public final class ApplicationConstants {
     public static final String DISH_PRICE_CANNOT_BE_NULL = "Price is required";
     public static final String DISH_PRICE_MUST_BE_POSITIVE = "Price must be a positive integer greater than 0";
 
+    public static final String ORDER_RESTAURANT_ID_CANNOT_BE_NULL = "Restaurant ID is required";
+    public static final String ORDER_RESTAURANT_ID_MUST_BE_POSITIVE = "Restaurant ID must be a positive number";
+    public static final String ORDER_DISHES_CANNOT_BE_EMPTY = "Order must contain at least one dish";
+    public static final String ORDER_DISH_ID_CANNOT_BE_NULL = "Dish ID is required";
+    public static final String ORDER_DISH_ID_MUST_BE_POSITIVE = "Dish ID must be a positive number";
+    public static final String ORDER_DISH_QUANTITY_CANNOT_BE_NULL = "Quantity is required";
+    public static final String ORDER_DISH_QUANTITY_MUST_BE_POSITIVE = "Quantity must be a positive integer greater than 0";
+
 }
