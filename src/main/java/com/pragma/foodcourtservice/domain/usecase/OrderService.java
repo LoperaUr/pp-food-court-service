@@ -5,11 +5,7 @@ import com.pragma.foodcourtservice.domain.api.IOrderServicePort;
 import com.pragma.foodcourtservice.domain.api.IRestaurantServicePort;
 import com.pragma.foodcourtservice.domain.constants.DomainConstants;
 import com.pragma.foodcourtservice.domain.exception.DomainException;
-import com.pragma.foodcourtservice.domain.model.Dish;
-import com.pragma.foodcourtservice.domain.model.Order;
-import com.pragma.foodcourtservice.domain.model.OrderStatus;
-import com.pragma.foodcourtservice.domain.model.Restaurant;
-import com.pragma.foodcourtservice.domain.model.User;
+import com.pragma.foodcourtservice.domain.model.*;
 import com.pragma.foodcourtservice.domain.spi.IAuthenticationServicePort;
 import com.pragma.foodcourtservice.domain.spi.IOrderPersistencePort;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +36,11 @@ public class OrderService implements IOrderServicePort {
         order.setStatus(OrderStatus.PENDING);
         order.setDate(LocalDateTime.now());
         orderPersistencePort.saveOrder(order);
+    }
+
+    @Override
+    public PageModel<Order> getOrders(int page, int size, OrderStatus status) {
+        return orderPersistencePort.getOrders(page, size, status);
     }
 
     private void validateOrderHasDishes(Order order) {
