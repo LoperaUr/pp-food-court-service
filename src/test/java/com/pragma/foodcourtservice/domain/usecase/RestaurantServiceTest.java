@@ -212,6 +212,38 @@ class RestaurantServiceTest {
     }
 
     @Test
+    void assignEmployeeToOwnerRestaurantSuccess() {
+        when(authenticationContextPort.getAuthenticatedUser()).thenReturn(ownerUser);
+        when(restaurantPersistencePort.getRestaurantByOwnerId(2L)).thenReturn(restaurant);
+
+        restaurantService.assignEmployeeToOwnerRestaurant(2L, 50L);
+
+        verify(restaurantPersistencePort).assignEmployeeToRestaurant(50L, restaurant.getId());
+    }
+
+    @Test
+    void assignEmployeeToOwnerRestaurantThrowsWhenOwnerMismatch() {
+        when(authenticationContextPort.getAuthenticatedUser()).thenReturn(ownerUser);
+
+        DomainException exception = assertThrows(DomainException.class,
+                () -> restaurantService.assignEmployeeToOwnerRestaurant(999L, 50L));
+
+        assertEquals(DomainConstants.MSG_OWNER_TOKEN_MISMATCH, exception.getMessage());
+        assertEquals(HttpStatus.FORBIDDEN, exception.getHttpStatus());
+        verify(restaurantPersistencePort, never()).assignEmployeeToRestaurant(any(), any());
+    }
+
+    @Test
+    void assignEmployeeToOwnerRestaurantThrowsWhenEmployeeIdIsNull() {
+        DomainException exception = assertThrows(DomainException.class,
+                () -> restaurantService.assignEmployeeToOwnerRestaurant(2L, null));
+
+        assertEquals(DomainConstants.MSG_INVALID_EMPLOYEE_ID, exception.getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getHttpStatus());
+        verify(restaurantPersistencePort, never()).assignEmployeeToRestaurant(any(), any());
+    }
+
+    @Test
     void getRestaurantsIsSuccessAndMasksSensitiveFields() {
         Restaurant restaurantOne = RestaurantBuilder.aRestaurant()
                 .withId(10L)

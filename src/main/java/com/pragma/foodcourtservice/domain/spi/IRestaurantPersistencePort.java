@@ -6,6 +6,8 @@ import com.pragma.foodcourtservice.domain.model.Restaurant;
 public interface IRestaurantPersistencePort {
     void saveRestaurant(Restaurant restaurant);
 
+    void assignEmployeeToRestaurant(Long employeeId, Long restaurantId);
+
     Restaurant getRestaurantById(Long id);
 
     Restaurant getRestaurantByOwnerId(Long ownerId);

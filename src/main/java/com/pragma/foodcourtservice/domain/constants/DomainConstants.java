@@ -24,6 +24,8 @@ public final class DomainConstants {
     public static final String MSG_ORDER_MUST_HAVE_RESTAURANT_ID = "Order must have a restaurant ID";
     public static final String MSG_CLIENT_ALREADY_HAS_ACTIVE_ORDER = "Client already has an active order";
     public static final String MSG_DISH_DOES_NOT_BELONG_TO_RESTAURANT = "Dish does not belong to the selected restaurant";
+    public static final String MSG_OWNER_TOKEN_MISMATCH = "Authenticated owner does not match request owner";
+    public static final String MSG_INVALID_EMPLOYEE_ID = "Employee ID is required";
 
 
     // Key Names

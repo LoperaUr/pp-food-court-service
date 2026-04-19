@@ -23,6 +23,11 @@ public class RestaurantHandler implements IRestaurantHandler {
     }
 
     @Override
+    public void assignEmployeeToOwnerRestaurant(Long ownerId, Long employeeId) {
+        restaurantServicePort.assignEmployeeToOwnerRestaurant(ownerId, employeeId);
+    }
+
+    @Override
     public PageResponseDTO<RestaurantDTO> getRestaurants(int page, int size) {
         PageModel<Restaurant> restaurantPage = restaurantServicePort.getRestaurants(page, size);
         return restaurantMapper.toPageResponseDTO(restaurantPage);

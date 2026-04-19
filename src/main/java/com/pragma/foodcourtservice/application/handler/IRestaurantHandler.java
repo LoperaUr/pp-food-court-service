@@ -7,5 +7,7 @@ public interface IRestaurantHandler {
 
     void createRestaurant(RestaurantDTO restaurantDTO);
 
+    void assignEmployeeToOwnerRestaurant(Long ownerId, Long employeeId);
+
     PageResponseDTO<RestaurantDTO> getRestaurants(int page, int size);
 }

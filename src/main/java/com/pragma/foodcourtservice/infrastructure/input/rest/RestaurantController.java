@@ -1,6 +1,7 @@
 package com.pragma.foodcourtservice.infrastructure.input.rest;
 
 import com.pragma.foodcourtservice.application.dto.PageResponseDTO;
+import com.pragma.foodcourtservice.application.dto.EmployeeRestaurantAssignmentDTO;
 import com.pragma.foodcourtservice.application.dto.RestaurantDTO;
 import com.pragma.foodcourtservice.application.handler.IRestaurantHandler;
 import jakarta.validation.Valid;
@@ -19,6 +20,12 @@ public class RestaurantController {
     @PostMapping
     public ResponseEntity<Void> createRestaurant(@Valid @RequestBody RestaurantDTO restaurantDTO) {
         restaurantHandler.createRestaurant(restaurantDTO);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PostMapping("/employee-assignment")
+    public ResponseEntity<Void> assignEmployeeToOwnerRestaurant(@RequestBody EmployeeRestaurantAssignmentDTO request) {
+        restaurantHandler.assignEmployeeToOwnerRestaurant(request.getOwnerId(), request.getEmployeeId());
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

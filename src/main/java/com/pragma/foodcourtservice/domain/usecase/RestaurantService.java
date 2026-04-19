@@ -28,6 +28,21 @@ public class RestaurantService implements IRestaurantServicePort {
     }
 
     @Override
+    public void assignEmployeeToOwnerRestaurant(Long ownerId, Long employeeId) {
+        if (employeeId == null) {
+            throw new DomainException(DomainConstants.MSG_INVALID_EMPLOYEE_ID, HttpStatus.BAD_REQUEST);
+        }
+
+        User currentUser = authenticationContextPort.getAuthenticatedUser();
+        if (currentUser == null || currentUser.getId() == null || !currentUser.getId().equals(ownerId)) {
+            throw new DomainException(DomainConstants.MSG_OWNER_TOKEN_MISMATCH, HttpStatus.FORBIDDEN);
+        }
+
+        Restaurant restaurant = getRestaurantByOwnerId(ownerId);
+        restaurantPersistencePort.assignEmployeeToRestaurant(employeeId, restaurant.getId());
+    }
+
+    @Override
     public Restaurant getRestaurantById(Long id) {
         Restaurant restaurant = restaurantPersistencePort.getRestaurantById(id);
         if (restaurant == null) {

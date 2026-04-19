@@ -5,6 +5,7 @@ import com.pragma.foodcourtservice.domain.model.Restaurant;
 
 public interface IRestaurantServicePort {
     void createRestaurant(Restaurant restaurant);
+    void assignEmployeeToOwnerRestaurant(Long ownerId, Long employeeId);
     Restaurant getRestaurantById(Long id);
     Restaurant getRestaurantByOwnerId(Long ownerId);
     PageModel<Restaurant> getRestaurants(int page, int size);
