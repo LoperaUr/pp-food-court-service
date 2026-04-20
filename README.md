@@ -19,8 +19,8 @@ Microservicio de gestion de plazoleta de comidas para restaurantes, platos, pedi
 | #9  | Listar restaurantes                            | OK     | 
 | #10 | Listar menu por restaurante                    | OK     |
 | #11 | Crear pedido                                   | OK     |
-| #12 | Listar pedidos por estado                      | X      |
-| #13 | Asignar pedido/cambiar estado                  | X      |
+| #12 | Listar pedidos por estado                      | OK     |
+| #13 | Asignar pedido/cambiar estado                  | OK     |
 | #14 | Notificar pedido listo                         | X      |
 | #15 | Entregar pedido con PIN                        | X      |
 | #16 | Cancelar pedido                                | X      |
