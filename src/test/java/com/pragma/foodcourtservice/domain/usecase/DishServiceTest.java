@@ -8,7 +8,7 @@ import com.pragma.foodcourtservice.domain.model.Dish;
 import com.pragma.foodcourtservice.domain.model.PageModel;
 import com.pragma.foodcourtservice.domain.model.Restaurant;
 import com.pragma.foodcourtservice.domain.model.User;
-import com.pragma.foodcourtservice.domain.spi.IAuthenticationServicePort;
+import com.pragma.foodcourtservice.domain.api.IAuthenticationServicePort;
 import com.pragma.foodcourtservice.domain.spi.ICategoryPersistencePort;
 import com.pragma.foodcourtservice.domain.spi.IDishPersistencePort;
 import com.pragma.foodcourtservice.testdata.builders.CategoryBuilder;

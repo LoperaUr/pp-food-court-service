@@ -15,6 +15,8 @@ import org.springframework.data.domain.Page;
 public interface IOrderEntityMapper {
     OrderEntity toEntity(Order order);
 
+    Order toModel(OrderEntity orderEntity);
+
     @Mapping(target = "order", ignore = true)
     OrderDishEntity toEntity(OrderDish orderDish);
 

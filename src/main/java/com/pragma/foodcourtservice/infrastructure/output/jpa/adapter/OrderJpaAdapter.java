@@ -42,4 +42,11 @@ public class OrderJpaAdapter implements IOrderPersistencePort {
         Page<OrderEntity> pageResult = orderRepository.getOrderEntitiesByStatus(status, pageRequest);
         return orderMapper.toPageModel(pageResult);
     }
+
+    @Override
+    public Order getOrderById(Long orderId) {
+        return orderRepository.findById(orderId)
+                .map(orderMapper::toModel)
+                .orElse(null);
+    }
 }

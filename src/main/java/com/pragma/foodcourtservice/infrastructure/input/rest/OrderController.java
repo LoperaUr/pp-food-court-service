@@ -32,4 +32,10 @@ public class OrderController {
         PageResponseDTO<OrderDTO> ordersPage = orderHandler.getOrders(page, size, status);
         return ResponseEntity.ok(ordersPage);
     }
+
+    @PutMapping("/{orderId}/assign")
+    public ResponseEntity<Void> assignEmployeeToOrder(@PathVariable Long orderId) {
+        orderHandler.assignEmployeeToOrder(orderId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

@@ -6,7 +6,8 @@ import com.pragma.foodcourtservice.domain.api.IRestaurantServicePort;
 import com.pragma.foodcourtservice.domain.constants.DomainConstants;
 import com.pragma.foodcourtservice.domain.exception.DomainException;
 import com.pragma.foodcourtservice.domain.model.*;
-import com.pragma.foodcourtservice.domain.spi.IAuthenticationServicePort;
+import com.pragma.foodcourtservice.domain.api.IAuthenticationServicePort;
+import com.pragma.foodcourtservice.domain.spi.IEmployeeRestaurantPersistencePort;
 import com.pragma.foodcourtservice.domain.spi.IOrderPersistencePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ public class OrderService implements IOrderServicePort {
     private final IRestaurantServicePort restaurantServicePort;
     private final IAuthenticationServicePort authenticationServicePort;
     private final IDishServicePort dishServicePort;
+    private final IEmployeeRestaurantPersistencePort employeeRestaurantPersistencePort;
 
     @Override
     public void createOrder(Order order) {
@@ -41,6 +43,43 @@ public class OrderService implements IOrderServicePort {
     @Override
     public PageModel<Order> getOrders(int page, int size, OrderStatus status) {
         return orderPersistencePort.getOrders(page, size, status);
+    }
+
+    @Override
+    public void assignEmployeeToOrder(Long orderId, Long employeeId) {
+        Order order = orderPersistencePort.getOrderById(orderId);
+        validateOrderExists(order);
+        validateEmployeeIsNotAlreadyAssigned(order);
+        validateEmployeeFromRestaurant(employeeId, order.getRestaurantId());
+        validateOrderIsAssignable(order);
+
+        order.setChefId(employeeId);
+        order.setStatus(OrderStatus.IN_PREPARATION);
+        orderPersistencePort.saveOrder(order);
+    }
+
+    private void validateOrderIsAssignable(Order order) {
+        if (order.getStatus() != OrderStatus.PENDING) {
+            throw new DomainException(DomainConstants.MSG_ORDER_NOT_ASSIGNABLE, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void validateOrderExists(Order order) {
+        if (order == null) {
+            throw new DomainException(DomainConstants.MSG_ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    private void validateEmployeeIsNotAlreadyAssigned(Order order) {
+        if (order.getChefId() != null) {
+            throw new DomainException(DomainConstants.MSG_ALREADY_ASSIGNED_EMPLOYEE, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void validateEmployeeFromRestaurant(Long employeeId, Long restaurantId) {
+        if (!employeeRestaurantPersistencePort.isEmployeeFromRestaurant(employeeId, restaurantId)) {
+            throw new DomainException(DomainConstants.MSG_EMPLOYEE_NOT_FROM_RESTAURANT, HttpStatus.FORBIDDEN);
+        }
     }
 
     private void validateOrderHasDishes(Order order) {

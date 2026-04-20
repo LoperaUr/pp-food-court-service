@@ -2,7 +2,7 @@ package com.pragma.foodcourtservice.infrastructure.output.security.adapter;
 
 import com.pragma.foodcourtservice.domain.constants.DomainConstants;
 import com.pragma.foodcourtservice.domain.model.User;
-import com.pragma.foodcourtservice.domain.spi.IAuthenticationServicePort;
+import com.pragma.foodcourtservice.domain.api.IAuthenticationServicePort;
 import com.pragma.foodcourtservice.infrastructure.output.security.helper.JwtAuthentication;
 import io.jsonwebtoken.Claims;
 import org.springframework.security.core.Authentication;

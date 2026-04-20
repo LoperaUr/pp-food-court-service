@@ -8,4 +8,6 @@ public interface IOrderServicePort {
     void createOrder(Order order);
 
     PageModel<Order> getOrders(int page, int size, OrderStatus status);
+
+    void assignEmployeeToOrder(Long orderId, Long employeeId);
 }

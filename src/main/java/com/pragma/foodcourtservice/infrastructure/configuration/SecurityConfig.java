@@ -1,5 +1,6 @@
 package com.pragma.foodcourtservice.infrastructure.configuration;
 
+import com.pragma.foodcourtservice.domain.model.Role;
 import com.pragma.foodcourtservice.infrastructure.output.security.helper.CustomAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,12 +29,13 @@ public class SecurityConfig {
                 .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/restaurants").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/restaurants/employee-assignment").hasRole("OWNER")
-                        .requestMatchers(HttpMethod.POST, "/dishes").hasRole("OWNER")
-                        .requestMatchers(HttpMethod.PUT, "/dishes/**").hasRole("OWNER")
+                        .requestMatchers(HttpMethod.POST, "/restaurants").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.POST, "/restaurants/employee-assignment").hasRole(Role.OWNER.name())
+                        .requestMatchers(HttpMethod.POST, "/dishes").hasRole(Role.OWNER.name())
+                        .requestMatchers(HttpMethod.PUT, "/dishes/**").hasRole(Role.OWNER.name())
                         .requestMatchers(HttpMethod.GET, "/restaurants").authenticated()
                         .requestMatchers(HttpMethod.POST, "/orders").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/orders/**").hasRole(Role.EMPLOYEE.name())
                         .anyRequest().permitAll()
                 );
 

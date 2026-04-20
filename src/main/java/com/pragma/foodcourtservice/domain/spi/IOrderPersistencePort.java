@@ -12,4 +12,7 @@ public interface IOrderPersistencePort {
     boolean hasActiveOrderForClient(Long clientId, Collection<OrderStatus> statuses);
 
     PageModel<Order> getOrders(int page, int size, OrderStatus status);
+
+    Order getOrderById(Long orderId);
+
 }

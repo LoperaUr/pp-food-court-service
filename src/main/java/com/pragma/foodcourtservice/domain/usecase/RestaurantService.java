@@ -7,7 +7,7 @@ import com.pragma.foodcourtservice.domain.model.PageModel;
 import com.pragma.foodcourtservice.domain.model.Restaurant;
 import com.pragma.foodcourtservice.domain.model.Role;
 import com.pragma.foodcourtservice.domain.model.User;
-import com.pragma.foodcourtservice.domain.spi.IAuthenticationServicePort;
+import com.pragma.foodcourtservice.domain.api.IAuthenticationServicePort;
 import com.pragma.foodcourtservice.domain.spi.IRestaurantPersistencePort;
 import com.pragma.foodcourtservice.domain.api.IUserServicePort;
 import lombok.RequiredArgsConstructor;

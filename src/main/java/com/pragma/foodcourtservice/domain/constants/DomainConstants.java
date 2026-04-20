@@ -26,6 +26,10 @@ public final class DomainConstants {
     public static final String MSG_DISH_DOES_NOT_BELONG_TO_RESTAURANT = "Dish does not belong to the selected restaurant";
     public static final String MSG_OWNER_TOKEN_MISMATCH = "Authenticated owner does not match request owner";
     public static final String MSG_INVALID_EMPLOYEE_ID = "Employee ID is required";
+    public static final String MSG_ORDER_NOT_FOUND = "Order not found";
+    public static final String MSG_EMPLOYEE_NOT_FROM_RESTAURANT = "Employee does not belong to this restaurant";
+    public static final String MSG_ORDER_NOT_ASSIGNABLE = "Order has invalid status for assignment";
+    public static final String MSG_ALREADY_ASSIGNED_EMPLOYEE = "Order already has an assigned employee";
 
 
     // Key Names
