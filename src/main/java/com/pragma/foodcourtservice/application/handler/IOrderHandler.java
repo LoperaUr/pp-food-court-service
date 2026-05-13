@@ -15,4 +15,6 @@ public interface IOrderHandler {
     void markOrderAsReady(Long orderId);
 
     void markOrderAsDelivered(Long orderId, String securityCode);
+
+    void cancelOrder(Long orderId);
 }

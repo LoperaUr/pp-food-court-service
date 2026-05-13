@@ -49,4 +49,10 @@ public class OrderHandler implements IOrderHandler {
         Long employeeId = authenticationServicePort.getAuthenticatedUser().getId();
         orderServicePort.markOrderAsDelivered(orderId, securityCode, employeeId);
     }
+
+    @Override
+    public void cancelOrder(Long orderId) {
+        Long clientId = authenticationServicePort.getAuthenticatedUser().getId();
+        orderServicePort.cancelOrder(orderId, clientId);
+    }
 }

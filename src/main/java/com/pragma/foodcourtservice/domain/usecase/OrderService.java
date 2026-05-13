@@ -96,6 +96,29 @@ public class OrderService implements IOrderServicePort {
         orderPersistencePort.saveOrder(order);
     }
 
+    @Override
+    public void cancelOrder(Long orderId, Long clientId) {
+        Order order = orderPersistencePort.getOrderById(orderId);
+        validateOrderExists(order);
+        validateUserIsClientOfOrder(order, clientId);
+        validateOrderIsPending(order);
+
+        order.setStatus(OrderStatus.CANCELLED);
+        orderPersistencePort.saveOrder(order);
+    }
+
+    private void validateOrderIsPending(Order order) {
+        if (order.getStatus() != OrderStatus.PENDING) {
+            throw new DomainException(DomainConstants.MSG_ONLY_PENDING_ORDERS_CAN_BE_CANCELLED, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void validateUserIsClientOfOrder(Order order, Long clientId) {
+        if (!order.getClientId().equals(clientId)) {
+            throw new DomainException(DomainConstants.MSG_ORDER_NOT_BELONG_TO_AUTHENTICATED_CLIENT, HttpStatus.FORBIDDEN);
+        }
+    }
+
     private void validateSecurityCode(Order order, String securityCode) {
         if (!order.getSecurityPin().equals(securityCode)) {
             throw new DomainException(DomainConstants.MSG_INVALID_SECURITY_CODE, HttpStatus.BAD_REQUEST);

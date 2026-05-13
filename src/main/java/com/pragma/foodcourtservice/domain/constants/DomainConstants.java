@@ -4,7 +4,8 @@ public final class DomainConstants {
 
 
     // Prevent instantiation
-    private DomainConstants() {}
+    private DomainConstants() {
+    }
 
     // System Messages
     public static final String MSG_RESTAURANT_NOT_FOUND = "Restaurant not found";
@@ -36,6 +37,8 @@ public final class DomainConstants {
     public static final String MSG_NOTIFICATION_SERVICE_UNAUTHORIZED = "Not authorized to query notification service";
     public static final String MSG_NOTIFICATION_SERVICE_UNAVAILABLE = "Notification service unavailable";
     public static final String MSG_INVALID_SECURITY_CODE = "Invalid security code for order delivery";
+    public static final String MSG_ORDER_NOT_BELONG_TO_AUTHENTICATED_CLIENT = "Order does not belong to the authenticated client";
+    public static final String MSG_ONLY_PENDING_ORDERS_CAN_BE_CANCELLED = "Only pending orders can be cancelled";
 
 
     // Key Names
