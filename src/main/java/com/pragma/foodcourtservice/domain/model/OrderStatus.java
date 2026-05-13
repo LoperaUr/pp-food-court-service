@@ -21,5 +21,21 @@ public enum OrderStatus {
     public static List<OrderStatus> activeStatuses() {
         return List.of(PENDING, IN_PREPARATION, READY);
     }
+
+    public boolean isPending() {
+        return this == PENDING;
+    }
+
+    public boolean isInPreparation() {
+        return this == IN_PREPARATION;
+    }
+
+    public boolean isReady() {
+        return this == READY;
+    }
+
+    public boolean isActive() {
+        return activeStatuses().contains(this);
+    }
 }
 

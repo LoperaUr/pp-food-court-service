@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -44,9 +45,8 @@ public class OrderJpaAdapter implements IOrderPersistencePort {
     }
 
     @Override
-    public Order getOrderById(Long orderId) {
+    public Optional<Order> getOrderById(Long orderId) {
         return orderRepository.findById(orderId)
-                .map(orderMapper::toModel)
-                .orElse(null);
+                .map(orderMapper::toModel);
     }
 }

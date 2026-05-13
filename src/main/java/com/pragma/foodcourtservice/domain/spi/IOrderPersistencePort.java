@@ -5,6 +5,7 @@ import com.pragma.foodcourtservice.domain.model.OrderStatus;
 import com.pragma.foodcourtservice.domain.model.PageModel;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public interface IOrderPersistencePort {
     void saveOrder(Order order);
@@ -13,6 +14,6 @@ public interface IOrderPersistencePort {
 
     PageModel<Order> getOrders(int page, int size, OrderStatus status);
 
-    Order getOrderById(Long orderId);
+    Optional<Order> getOrderById(Long orderId);
 
 }

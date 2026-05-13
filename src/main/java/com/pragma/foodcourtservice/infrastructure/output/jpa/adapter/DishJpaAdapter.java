@@ -11,6 +11,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
+import java.util.List;
+
+
 @Component
 @RequiredArgsConstructor
 public class DishJpaAdapter implements IDishPersistencePort {
@@ -28,6 +32,13 @@ public class DishJpaAdapter implements IDishPersistencePort {
     public Dish getDishById(Long id) {
         DishEntity dishEntity = dishRepository.findById(id).orElse(null);
         return dishEntityMapper.toDish(dishEntity);
+    }
+
+    @Override
+    public List<Dish> getDishesByIds(Collection<Long> ids) {
+        return dishRepository.findAllById(ids).stream()
+                .map(dishEntityMapper::toDish)
+                .toList();
     }
 
     @Override

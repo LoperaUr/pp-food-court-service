@@ -15,6 +15,9 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
+import java.util.Collection;
+import java.util.List;
+
 @RequiredArgsConstructor
 public class DishService implements IDishServicePort {
 
@@ -73,6 +76,11 @@ public class DishService implements IDishServicePort {
         if (dish == null)
             throw new DomainException(DomainConstants.MSG_DISH_NOT_FOUND, HttpStatus.NOT_FOUND);
         return dish;
+    }
+
+    @Override
+    public List<Dish> getDishesByIds(Collection<Long> ids) {
+        return dishPersistencePort.getDishesByIds(ids);
     }
 
     private @NonNull Dish getDishByIdAndValidateOwn(Long dishId) {
