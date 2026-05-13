@@ -12,4 +12,6 @@ public interface IOrderServicePort {
     void assignEmployeeToOrder(Long orderId, Long employeeId);
 
     void markOrderAsReady(Long orderId, Long employeeId);
+
+    void markOrderAsDelivered(Long orderId, String securityCode, Long deliveryPersonId);
 }

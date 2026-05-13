@@ -82,6 +82,33 @@ public class OrderService implements IOrderServicePort {
         );
     }
 
+    @Override
+    public void markOrderAsDelivered(Long orderId, String securityCode, Long employeeId) {
+        Order order = orderPersistencePort.getOrderById(orderId);
+        validateOrderExists(order);
+        validateEmployeeFromRestaurant(employeeId, order.getRestaurantId());
+        validateOrderHasAssignedEmployee(order);
+        validateEmployeeIsAssignedToOrder(order, employeeId);
+        validateOrderIsReady(order);
+        validateSecurityCode(order, securityCode);
+
+        order.setStatus(OrderStatus.DELIVERED);
+        orderPersistencePort.saveOrder(order);
+    }
+
+    private void validateSecurityCode(Order order, String securityCode) {
+        if (!order.getSecurityPin().equals(securityCode)) {
+            throw new DomainException(DomainConstants.MSG_INVALID_SECURITY_CODE, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void validateOrderIsReady(Order order) {
+        if (order.getStatus() != OrderStatus.READY) {
+            throw new DomainException(DomainConstants.MSG_ORDER_NOT_READY, HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
     private void validateOrderIsAssignable(Order order) {
         if (order.getStatus() != OrderStatus.PENDING) {
             throw new DomainException(DomainConstants.MSG_ORDER_NOT_ASSIGNABLE, HttpStatus.BAD_REQUEST);

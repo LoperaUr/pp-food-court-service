@@ -2,6 +2,7 @@ package com.pragma.foodcourtservice.domain.constants;
 
 public final class DomainConstants {
 
+
     // Prevent instantiation
     private DomainConstants() {}
 
@@ -34,6 +35,7 @@ public final class DomainConstants {
     public static final String MSG_ORDER_NOT_ASSIGNED_TO_AUTHENTICATED_EMPLOYEE = "Order is assigned to another employee";
     public static final String MSG_NOTIFICATION_SERVICE_UNAUTHORIZED = "Not authorized to query notification service";
     public static final String MSG_NOTIFICATION_SERVICE_UNAVAILABLE = "Notification service unavailable";
+    public static final String MSG_INVALID_SECURITY_CODE = "Invalid security code for order delivery";
 
 
     // Key Names

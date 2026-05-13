@@ -13,4 +13,6 @@ public interface IOrderHandler {
     void assignEmployeeToOrder(Long orderId);
 
     void markOrderAsReady(Long orderId);
+
+    void markOrderAsDelivered(Long orderId, String securityCode);
 }

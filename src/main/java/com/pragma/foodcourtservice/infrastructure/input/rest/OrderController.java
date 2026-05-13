@@ -44,4 +44,13 @@ public class OrderController {
         orderHandler.markOrderAsReady(orderId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @PutMapping("/{orderId}/deliver")
+    public ResponseEntity<Void> markOrderAsDelivered(
+            @PathVariable Long orderId,
+            @RequestParam String securityCode
+            ) {
+        orderHandler.markOrderAsDelivered(orderId, securityCode);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
