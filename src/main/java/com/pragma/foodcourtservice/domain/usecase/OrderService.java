@@ -3,38 +3,40 @@ package com.pragma.foodcourtservice.domain.usecase;
 import com.pragma.foodcourtservice.domain.api.IDishServicePort;
 import com.pragma.foodcourtservice.domain.api.IOrderServicePort;
 import com.pragma.foodcourtservice.domain.api.IRestaurantServicePort;
+import com.pragma.foodcourtservice.domain.api.INotificationServicePort;
+import com.pragma.foodcourtservice.domain.api.IUserServicePort;
 import com.pragma.foodcourtservice.domain.constants.DomainConstants;
 import com.pragma.foodcourtservice.domain.exception.DomainException;
 import com.pragma.foodcourtservice.domain.model.*;
-import com.pragma.foodcourtservice.domain.api.IAuthenticationServicePort;
 import com.pragma.foodcourtservice.domain.spi.IEmployeeRestaurantPersistencePort;
 import com.pragma.foodcourtservice.domain.spi.IOrderPersistencePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.ThreadLocalRandom;
 
 @RequiredArgsConstructor
 public class OrderService implements IOrderServicePort {
 
     private final IOrderPersistencePort orderPersistencePort;
     private final IRestaurantServicePort restaurantServicePort;
-    private final IAuthenticationServicePort authenticationServicePort;
     private final IDishServicePort dishServicePort;
     private final IEmployeeRestaurantPersistencePort employeeRestaurantPersistencePort;
+    private final IUserServicePort userServicePort;
+    private final INotificationServicePort notificationServicePort;
 
     @Override
-    public void createOrder(Order order) {
+    public void createOrder(Order order, Long clientId) {
         validateOrderHasDishes(order);
         validateRestaurantId(order);
 
         Restaurant restaurant = restaurantServicePort.getRestaurantById(order.getRestaurantId());
-        User authenticatedUser = authenticationServicePort.getAuthenticatedUser();
 
-        validateClientHasNoActiveOrder(authenticatedUser);
+        validateClientHasNoActiveOrder(clientId);
         validateDishesBelongToRestaurant(order, restaurant);
 
-        order.setClientId(authenticatedUser.getId());
+        order.setClientId(clientId);
         order.setStatus(OrderStatus.PENDING);
         order.setDate(LocalDateTime.now());
         orderPersistencePort.saveOrder(order);
@@ -58,9 +60,49 @@ public class OrderService implements IOrderServicePort {
         orderPersistencePort.saveOrder(order);
     }
 
+    @Override
+    public void markOrderAsReady(Long orderId, Long employeeId) {
+        Order order = orderPersistencePort.getOrderById(orderId);
+        validateOrderExists(order);
+        validateEmployeeFromRestaurant(employeeId, order.getRestaurantId());
+        validateOrderHasAssignedEmployee(order);
+        validateEmployeeIsAssignedToOrder(order, employeeId);
+        validateOrderIsInPreparation(order);
+
+        String securityPin = generateSecurityPin();
+        order.setSecurityPin(securityPin);
+        order.setStatus(OrderStatus.READY);
+        orderPersistencePort.saveOrder(order);
+
+        User client = userServicePort.getUserById(order.getClientId());
+        String message = "Tu pedido está listo para recoger. PIN de seguridad: " + securityPin;
+        notificationServicePort.notifyOrderReady(
+                client.getEmail(),
+                message
+        );
+    }
+
     private void validateOrderIsAssignable(Order order) {
         if (order.getStatus() != OrderStatus.PENDING) {
             throw new DomainException(DomainConstants.MSG_ORDER_NOT_ASSIGNABLE, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void validateOrderIsInPreparation(Order order) {
+        if (order.getStatus() != OrderStatus.IN_PREPARATION) {
+            throw new DomainException(DomainConstants.MSG_ORDER_NOT_READY, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void validateOrderHasAssignedEmployee(Order order) {
+        if (order.getChefId() == null) {
+            throw new DomainException(DomainConstants.MSG_ORDER_NOT_READY, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void validateEmployeeIsAssignedToOrder(Order order, Long employeeId) {
+        if (!order.getChefId().equals(employeeId)) {
+            throw new DomainException(DomainConstants.MSG_ORDER_NOT_ASSIGNED_TO_AUTHENTICATED_EMPLOYEE, HttpStatus.FORBIDDEN);
         }
     }
 
@@ -94,8 +136,8 @@ public class OrderService implements IOrderServicePort {
         }
     }
 
-    private void validateClientHasNoActiveOrder(User authenticatedUser) {
-        if (orderPersistencePort.hasActiveOrderForClient(authenticatedUser.getId(), OrderStatus.activeStatuses())) {
+    private void validateClientHasNoActiveOrder(Long clientId) {
+        if (orderPersistencePort.hasActiveOrderForClient(clientId, OrderStatus.activeStatuses())) {
             throw new DomainException(DomainConstants.MSG_CLIENT_ALREADY_HAS_ACTIVE_ORDER, HttpStatus.BAD_REQUEST);
         }
     }
@@ -107,5 +149,10 @@ public class OrderService implements IOrderServicePort {
                 throw new DomainException(DomainConstants.MSG_DISH_DOES_NOT_BELONG_TO_RESTAURANT, HttpStatus.BAD_REQUEST);
             }
         });
+    }
+
+    private String generateSecurityPin() {
+        int pin = ThreadLocalRandom.current().nextInt(100000, 1000000);
+        return String.valueOf(pin);
     }
 }

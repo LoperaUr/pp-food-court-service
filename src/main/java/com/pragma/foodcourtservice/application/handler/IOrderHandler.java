@@ -11,4 +11,6 @@ public interface IOrderHandler {
     PageResponseDTO<OrderDTO> getOrders(int page, int size, OrderStatus status);
 
     void assignEmployeeToOrder(Long orderId);
+
+    void markOrderAsReady(Long orderId);
 }

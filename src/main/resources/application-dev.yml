@@ -19,3 +19,6 @@ spring:
 
 user-service:
   url: http://localhost:8081
+
+notification-service:
+  url: http://localhost:8082

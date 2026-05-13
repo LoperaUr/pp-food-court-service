@@ -15,25 +15,32 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class OrderHandler implements IOrderHandler {
 
-    private final IOrderServicePort orderService;
+    private final IOrderServicePort orderServicePort;
     private final IOrderMapper orderMapper;
     private final IAuthenticationServicePort authenticationServicePort;
 
     @Override
     public void createOrder(OrderDTO orderDTO) {
+        Long clientId = authenticationServicePort.getAuthenticatedUser().getId();
         Order order = orderMapper.toModel(orderDTO);
-        orderService.createOrder(order);
+        orderServicePort.createOrder(order, clientId);
     }
 
     @Override
     public PageResponseDTO<OrderDTO> getOrders(int page, int size, OrderStatus status) {
-        PageModel<Order> orders = orderService.getOrders(page, size, status);
+        PageModel<Order> orders = orderServicePort.getOrders(page, size, status);
         return orderMapper.toPageResponseDTO(orders);
     }
 
     @Override
     public void assignEmployeeToOrder(Long orderId) {
         Long employeeId = authenticationServicePort.getAuthenticatedUser().getId();
-        orderService.assignEmployeeToOrder(orderId, employeeId);
+        orderServicePort.assignEmployeeToOrder(orderId, employeeId);
+    }
+
+    @Override
+    public void markOrderAsReady(Long orderId) {
+        Long employeeId = authenticationServicePort.getAuthenticatedUser().getId();
+        orderServicePort.markOrderAsReady(orderId, employeeId);
     }
 }

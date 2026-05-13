@@ -1,10 +1,6 @@
 package com.pragma.foodcourtservice.infrastructure.configuration;
 
-import com.pragma.foodcourtservice.domain.api.IDishServicePort;
-import com.pragma.foodcourtservice.domain.api.IOrderServicePort;
-import com.pragma.foodcourtservice.domain.api.IRestaurantServicePort;
-import com.pragma.foodcourtservice.domain.api.IUserServicePort;
-import com.pragma.foodcourtservice.domain.api.IAuthenticationServicePort;
+import com.pragma.foodcourtservice.domain.api.*;
 import com.pragma.foodcourtservice.domain.spi.ICategoryPersistencePort;
 import com.pragma.foodcourtservice.domain.spi.IDishPersistencePort;
 import com.pragma.foodcourtservice.domain.spi.IEmployeeRestaurantPersistencePort;
@@ -28,6 +24,7 @@ public class BeanConfiguration {
     private final ICategoryPersistencePort categoryPersistencePort;
     private final IOrderPersistencePort orderPersistencePort;
     private final IEmployeeRestaurantPersistencePort employeeRestaurantPersistencePort;
+    private final INotificationServicePort notificationServicePort;
 
     @Bean
     public IRestaurantServicePort restaurantServicePort() {
@@ -41,6 +38,6 @@ public class BeanConfiguration {
 
     @Bean
     public IOrderServicePort orderServicePort() {
-        return new OrderService(orderPersistencePort, restaurantServicePort(), authenticationContextPort, dishServicePort(), employeeRestaurantPersistencePort);
+        return new OrderService(orderPersistencePort, restaurantServicePort(), dishServicePort(), employeeRestaurantPersistencePort, userServicePort, notificationServicePort);
     }
 }

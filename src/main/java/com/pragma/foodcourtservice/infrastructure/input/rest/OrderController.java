@@ -38,4 +38,10 @@ public class OrderController {
         orderHandler.assignEmployeeToOrder(orderId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @PutMapping("/{orderId}/ready")
+    public ResponseEntity<Void> markOrderAsReady(@PathVariable Long orderId) {
+        orderHandler.markOrderAsReady(orderId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

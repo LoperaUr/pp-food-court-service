@@ -30,6 +30,10 @@ public final class DomainConstants {
     public static final String MSG_EMPLOYEE_NOT_FROM_RESTAURANT = "Employee does not belong to this restaurant";
     public static final String MSG_ORDER_NOT_ASSIGNABLE = "Order has invalid status for assignment";
     public static final String MSG_ALREADY_ASSIGNED_EMPLOYEE = "Order already has an assigned employee";
+    public static final String MSG_ORDER_NOT_READY = "Order has invalid status for ready notification";
+    public static final String MSG_ORDER_NOT_ASSIGNED_TO_AUTHENTICATED_EMPLOYEE = "Order is assigned to another employee";
+    public static final String MSG_NOTIFICATION_SERVICE_UNAUTHORIZED = "Not authorized to query notification service";
+    public static final String MSG_NOTIFICATION_SERVICE_UNAVAILABLE = "Notification service unavailable";
 
 
     // Key Names

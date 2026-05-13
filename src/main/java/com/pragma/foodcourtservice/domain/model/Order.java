@@ -14,4 +14,5 @@ public class Order {
     private LocalDateTime date;
     private OrderStatus status;
     private List<OrderDish> dishes;
+    private String securityPin;
 }

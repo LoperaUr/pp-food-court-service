@@ -9,11 +9,8 @@ import com.pragma.foodcourtservice.domain.model.Order;
 import com.pragma.foodcourtservice.domain.model.OrderDish;
 import com.pragma.foodcourtservice.domain.model.OrderStatus;
 import com.pragma.foodcourtservice.domain.model.Restaurant;
-import com.pragma.foodcourtservice.domain.model.User;
-import com.pragma.foodcourtservice.domain.api.IAuthenticationServicePort;
 import com.pragma.foodcourtservice.domain.spi.IOrderPersistencePort;
 import com.pragma.foodcourtservice.testdata.builders.RestaurantBuilder;
-import com.pragma.foodcourtservice.testdata.builders.UserBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,21 +48,14 @@ class OrderServiceTest {
     @Mock
     private IRestaurantServicePort restaurantServicePort;
     @Mock
-    private IAuthenticationServicePort authenticationServicePort;
-    @Mock
     private IDishServicePort dishServicePort;
 
-    private User authenticatedUser;
     private Restaurant restaurant;
     private Order order;
     private Dish dish;
 
     @BeforeEach
     void setUp() {
-        authenticatedUser = UserBuilder.aUser()
-                .withId(1L)
-                .build();
-
         restaurant = RestaurantBuilder.aRestaurant()
                 .withId(10L)
                 .withOwnerId(2L)
@@ -87,11 +77,10 @@ class OrderServiceTest {
     @Test
     void createOrderIsSuccess() {
         when(restaurantServicePort.getRestaurantById(10L)).thenReturn(restaurant);
-        when(authenticationServicePort.getAuthenticatedUser()).thenReturn(authenticatedUser);
         when(orderPersistencePort.hasActiveOrderForClient(eq(1L), anyCollection())).thenReturn(false);
         when(dishServicePort.getDishById(100L)).thenReturn(dish);
 
-        orderService.createOrder(order);
+        orderService.createOrder(order, 1L);
 
         ArgumentCaptor<Order> orderCaptor = ArgumentCaptor.forClass(Order.class);
         verify(orderPersistencePort).saveOrder(orderCaptor.capture());
@@ -106,7 +95,6 @@ class OrderServiceTest {
         );
         verify(orderPersistencePort).hasActiveOrderForClient(1L, OrderStatus.activeStatuses());
         verify(restaurantServicePort).getRestaurantById(10L);
-        verify(authenticationServicePort).getAuthenticatedUser();
         verify(dishServicePort).getDishById(100L);
     }
 
@@ -115,11 +103,11 @@ class OrderServiceTest {
         order.setDishes(new ArrayList<>());
 
         DomainException exception = assertThrows(DomainException.class,
-                () -> orderService.createOrder(order));
+                () -> orderService.createOrder(order, 1L));
 
         assertEquals(DomainConstants.MSG_ORDER_MUST_CONTAIN_AT_LEAST_ONE_DISH, exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getHttpStatus());
-        verifyNoInteractions(restaurantServicePort, authenticationServicePort, orderPersistencePort, dishServicePort);
+        verifyNoInteractions(restaurantServicePort, orderPersistencePort, dishServicePort);
     }
 
     @Test
@@ -127,26 +115,24 @@ class OrderServiceTest {
         order.setRestaurantId(null);
 
         DomainException exception = assertThrows(DomainException.class,
-                () -> orderService.createOrder(order));
+                () -> orderService.createOrder(order, 1L));
 
         assertEquals(DomainConstants.MSG_ORDER_MUST_HAVE_RESTAURANT_ID, exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getHttpStatus());
-        verifyNoInteractions(restaurantServicePort, authenticationServicePort, orderPersistencePort, dishServicePort);
+        verifyNoInteractions(restaurantServicePort, orderPersistencePort, dishServicePort);
     }
 
     @Test
     void createOrderThrowsWhenClientAlreadyHasActiveOrder() {
         when(restaurantServicePort.getRestaurantById(10L)).thenReturn(restaurant);
-        when(authenticationServicePort.getAuthenticatedUser()).thenReturn(authenticatedUser);
         when(orderPersistencePort.hasActiveOrderForClient(eq(1L), anyCollection())).thenReturn(true);
 
         DomainException exception = assertThrows(DomainException.class,
-                () -> orderService.createOrder(order));
+                () -> orderService.createOrder(order, 1L));
 
         assertEquals(DomainConstants.MSG_CLIENT_ALREADY_HAS_ACTIVE_ORDER, exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getHttpStatus());
         verify(restaurantServicePort).getRestaurantById(10L);
-        verify(authenticationServicePort).getAuthenticatedUser();
         verify(orderPersistencePort).hasActiveOrderForClient(1L, OrderStatus.activeStatuses());
         verify(dishServicePort, never()).getDishById(any(Long.class));
         verify(orderPersistencePort, never()).saveOrder(any(Order.class));
@@ -159,12 +145,11 @@ class OrderServiceTest {
         otherRestaurantDish.setRestaurantId(99L);
 
         when(restaurantServicePort.getRestaurantById(10L)).thenReturn(restaurant);
-        when(authenticationServicePort.getAuthenticatedUser()).thenReturn(authenticatedUser);
         when(orderPersistencePort.hasActiveOrderForClient(eq(1L), anyCollection())).thenReturn(false);
         when(dishServicePort.getDishById(100L)).thenReturn(otherRestaurantDish);
 
         DomainException exception = assertThrows(DomainException.class,
-                () -> orderService.createOrder(order));
+                () -> orderService.createOrder(order, 1L));
 
         assertEquals(DomainConstants.MSG_DISH_DOES_NOT_BELONG_TO_RESTAURANT, exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getHttpStatus());
@@ -175,12 +160,11 @@ class OrderServiceTest {
     @Test
     void createOrderSetsDateWhenSaving() {
         when(restaurantServicePort.getRestaurantById(10L)).thenReturn(restaurant);
-        when(authenticationServicePort.getAuthenticatedUser()).thenReturn(authenticatedUser);
         when(orderPersistencePort.hasActiveOrderForClient(eq(1L), anyCollection())).thenReturn(false);
         when(dishServicePort.getDishById(100L)).thenReturn(dish);
 
         order.setDate(null);
-        orderService.createOrder(order);
+        orderService.createOrder(order, 1L);
 
         ArgumentCaptor<Order> orderCaptor = ArgumentCaptor.forClass(Order.class);
         verify(orderPersistencePort).saveOrder(orderCaptor.capture());
