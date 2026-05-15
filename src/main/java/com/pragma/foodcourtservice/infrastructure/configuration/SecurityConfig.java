@@ -36,6 +36,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/restaurants").authenticated()
                         .requestMatchers(HttpMethod.POST, "/orders").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/orders/*/cancel").hasRole(Role.CLIENT.name())
+                        .requestMatchers(HttpMethod.GET, "/orders/*/history").hasRole(Role.CLIENT.name())
                         .requestMatchers(HttpMethod.PUT, "/orders/**").hasRole(Role.EMPLOYEE.name())
                         .anyRequest().permitAll()
                 );

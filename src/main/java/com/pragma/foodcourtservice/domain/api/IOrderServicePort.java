@@ -3,6 +3,9 @@ package com.pragma.foodcourtservice.domain.api;
 import com.pragma.foodcourtservice.domain.model.Order;
 import com.pragma.foodcourtservice.domain.model.OrderStatus;
 import com.pragma.foodcourtservice.domain.model.PageModel;
+import com.pragma.foodcourtservice.domain.model.Traceability;
+
+import java.util.List;
 
 public interface IOrderServicePort {
     void createOrder(Order order, Long clientId);
@@ -16,4 +19,6 @@ public interface IOrderServicePort {
     void markOrderAsDelivered(Long orderId, String securityCode, Long deliveryPersonId);
 
     void cancelOrder(Long orderId, Long clientId);
+
+    List<Traceability> getOrderHistory(Long orderId, Long clientId);
 }

@@ -25,6 +25,7 @@ public class BeanConfiguration {
     private final IOrderPersistencePort orderPersistencePort;
     private final IEmployeeRestaurantPersistencePort employeeRestaurantPersistencePort;
     private final INotificationServicePort notificationServicePort;
+    private final ITraceabilityServicePort traceabilityServicePort;
 
     @Bean
     public IRestaurantServicePort restaurantServicePort() {
@@ -38,6 +39,6 @@ public class BeanConfiguration {
 
     @Bean
     public IOrderServicePort orderServicePort() {
-        return new OrderService(orderPersistencePort, restaurantServicePort(), dishServicePort(), employeeRestaurantPersistencePort, userServicePort, notificationServicePort);
+        return new OrderService(orderPersistencePort, restaurantServicePort(), dishServicePort(), employeeRestaurantPersistencePort, userServicePort, notificationServicePort, traceabilityServicePort);
     }
 }

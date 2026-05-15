@@ -2,14 +2,18 @@ package com.pragma.foodcourtservice.application.handler;
 
 import com.pragma.foodcourtservice.application.dto.OrderDTO;
 import com.pragma.foodcourtservice.application.dto.PageResponseDTO;
+import com.pragma.foodcourtservice.application.dto.TraceabilityDTO;
 import com.pragma.foodcourtservice.application.mapper.IOrderMapper;
 import com.pragma.foodcourtservice.domain.api.IOrderServicePort;
 import com.pragma.foodcourtservice.domain.model.Order;
 import com.pragma.foodcourtservice.domain.model.OrderStatus;
 import com.pragma.foodcourtservice.domain.model.PageModel;
 import com.pragma.foodcourtservice.domain.api.IAuthenticationServicePort;
+import com.pragma.foodcourtservice.domain.model.Traceability;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -54,5 +58,12 @@ public class OrderHandler implements IOrderHandler {
     public void cancelOrder(Long orderId) {
         Long clientId = authenticationServicePort.getAuthenticatedUser().getId();
         orderServicePort.cancelOrder(orderId, clientId);
+    }
+
+    @Override
+    public List<TraceabilityDTO> getOrderHistory(Long orderId) {
+        Long clientId = authenticationServicePort.getAuthenticatedUser().getId();
+        List<Traceability> traceability = orderServicePort.getOrderHistory(orderId, clientId);
+        return orderMapper.toTraceabilityDTOList(traceability);
     }
 }

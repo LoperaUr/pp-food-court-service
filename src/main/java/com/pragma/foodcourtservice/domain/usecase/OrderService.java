@@ -4,6 +4,7 @@ import com.pragma.foodcourtservice.domain.api.IDishServicePort;
 import com.pragma.foodcourtservice.domain.api.IOrderServicePort;
 import com.pragma.foodcourtservice.domain.api.IRestaurantServicePort;
 import com.pragma.foodcourtservice.domain.api.INotificationServicePort;
+import com.pragma.foodcourtservice.domain.api.ITraceabilityServicePort;
 import com.pragma.foodcourtservice.domain.api.IUserServicePort;
 import com.pragma.foodcourtservice.domain.constants.DomainConstants;
 import com.pragma.foodcourtservice.domain.exception.ClientAlreadyHasActiveOrderException;
@@ -36,6 +37,7 @@ public class OrderService implements IOrderServicePort {
     private final IEmployeeRestaurantPersistencePort employeeRestaurantPersistencePort;
     private final IUserServicePort userServicePort;
     private final INotificationServicePort notificationServicePort;
+    private final ITraceabilityServicePort traceabilityServicePort;
 
     @Override
     public void createOrder(Order order, Long clientId) {
@@ -55,6 +57,7 @@ public class OrderService implements IOrderServicePort {
 
         order.createForClient(clientId, LocalDateTime.now());
         orderPersistencePort.saveOrder(order);
+        registerTraceability(order, null, null);
     }
 
     @Override
@@ -70,8 +73,10 @@ public class OrderService implements IOrderServicePort {
         validateEmployeeFromRestaurant(employeeId, order.getRestaurantId());
         validateOrderIsAssignable(order);
 
+        OrderStatus previousStatus = order.getStatus();
         order.assignChef(employeeId);
         orderPersistencePort.saveOrder(order);
+        registerTraceability(order, previousStatus, employeeId);
     }
 
     @Override
@@ -83,9 +88,11 @@ public class OrderService implements IOrderServicePort {
         validateEmployeeIsAssignedToOrder(order, employeeId);
         validateOrderIsInPreparation(order);
 
+        OrderStatus previousStatus = order.getStatus();
         String securityPin = generateSecurityPin();
         order.markAsReady(securityPin);
         orderPersistencePort.saveOrder(order);
+        registerTraceability(order, previousStatus, employeeId);
 
         User client = userServicePort.getUserById(order.getClientId());
         // Persist first and then notify: the message is external I/O and should only occur once the order state is durably stored.
@@ -106,8 +113,10 @@ public class OrderService implements IOrderServicePort {
         validateOrderIsReady(order);
         validateSecurityCode(order, securityCode);
 
+        OrderStatus previousStatus = order.getStatus();
         order.markAsDelivered();
         orderPersistencePort.saveOrder(order);
+        registerTraceability(order, previousStatus, employeeId);
     }
 
     @Override
@@ -117,8 +126,19 @@ public class OrderService implements IOrderServicePort {
         validateUserIsClientOfOrder(order, clientId);
         validateOrderIsPending(order);
 
+        OrderStatus previousStatus = order.getStatus();
         order.cancel();
         orderPersistencePort.saveOrder(order);
+        registerTraceability(order, previousStatus, null);
+    }
+
+    @Override
+    public List<Traceability> getOrderHistory(Long orderId, Long clientId) {
+        Order order = orderPersistencePort.getOrderById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException(DomainConstants.MSG_ORDER_NOT_FOUND));
+        validateUserIsClientOfOrder(order, clientId);
+
+        return traceabilityServicePort.getTraceabilityByOrderId(orderId);
     }
 
     private void validateOrderIsPending(Order order) {
@@ -218,5 +238,18 @@ public class OrderService implements IOrderServicePort {
     private String generateSecurityPin() {
         int pin = ThreadLocalRandom.current().nextInt(100000, 1000000);
         return String.valueOf(pin);
+    }
+
+    private void registerTraceability(Order order, OrderStatus previousStatus, Long employeeId) {
+        User client = userServicePort.getUserById(order.getClientId());
+        traceabilityServicePort.registerOrderStatusChange(
+                order.getId(),
+                order.getClientId(),
+                client.getEmail(),
+                LocalDateTime.now(),
+                previousStatus != null ? previousStatus.getCode() : null,
+                order.getStatus().getCode(),
+                employeeId
+        );
     }
 }

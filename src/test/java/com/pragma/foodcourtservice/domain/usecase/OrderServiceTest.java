@@ -15,6 +15,7 @@ import com.pragma.foodcourtservice.domain.model.User;
 import com.pragma.foodcourtservice.domain.spi.IEmployeeRestaurantPersistencePort;
 import com.pragma.foodcourtservice.domain.api.IUserServicePort;
 import com.pragma.foodcourtservice.domain.api.INotificationServicePort;
+import com.pragma.foodcourtservice.domain.api.ITraceabilityServicePort;
 import com.pragma.foodcourtservice.domain.spi.IOrderPersistencePort;
 import com.pragma.foodcourtservice.testdata.builders.RestaurantBuilder;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,6 +62,8 @@ class OrderServiceTest {
     private IUserServicePort userServicePort;
     @Mock
     private INotificationServicePort notificationServicePort;
+    @Mock
+    private ITraceabilityServicePort traceabilityServicePort;
 
     private Restaurant restaurant;
     private Order order;
@@ -96,6 +99,7 @@ class OrderServiceTest {
         when(restaurantServicePort.getRestaurantById(10L)).thenReturn(restaurant);
         when(orderPersistencePort.hasActiveOrderForClient(eq(1L), anyCollection())).thenReturn(false);
         when(dishServicePort.getDishesByIds(anyList())).thenReturn(List.of(dish));
+        when(userServicePort.getUserById(1L)).thenReturn(clientUser);
 
         orderService.createOrder(order, 1L);
 
@@ -113,14 +117,25 @@ class OrderServiceTest {
         verify(orderPersistencePort).hasActiveOrderForClient(1L, OrderStatus.activeStatuses());
         verify(restaurantServicePort).getRestaurantById(10L);
         verify(dishServicePort).getDishesByIds(List.of(100L));
+        verify(traceabilityServicePort).registerOrderStatusChange(
+                eq(savedOrder.getId()),
+                eq(1L),
+                eq("client@example.com"),
+                any(LocalDateTime.class),
+                org.mockito.ArgumentMatchers.isNull(),
+                eq(OrderStatus.PENDING.getCode()),
+                org.mockito.ArgumentMatchers.isNull()
+        );
     }
 
     @Test
     void assignEmployeeToOrderIsSuccess() {
         order.setStatus(OrderStatus.PENDING);
+        order.setClientId(1L);
 
         when(orderPersistencePort.getOrderById(1L)).thenReturn(java.util.Optional.of(order));
         when(employeeRestaurantPersistencePort.isEmployeeFromRestaurant(5L, 10L)).thenReturn(true);
+        when(userServicePort.getUserById(1L)).thenReturn(clientUser);
 
         orderService.assignEmployeeToOrder(1L, 5L);
 
@@ -129,6 +144,15 @@ class OrderServiceTest {
         Order saved = captor.getValue();
         assertEquals(5L, saved.getChefId());
         assertEquals(OrderStatus.IN_PREPARATION, saved.getStatus());
+        verify(traceabilityServicePort).registerOrderStatusChange(
+                eq(saved.getId()),
+                eq(1L),
+                eq("client@example.com"),
+                any(LocalDateTime.class),
+                eq(OrderStatus.PENDING.getCode()),
+                eq(OrderStatus.IN_PREPARATION.getCode()),
+                eq(5L)
+        );
     }
 
     @Test
@@ -154,10 +178,12 @@ class OrderServiceTest {
     void markOrderAsDeliveredWithValidPin() {
         order.setStatus(OrderStatus.READY);
         order.setChefId(9L);
+        order.setClientId(1L);
         order.setSecurityPin("123456");
 
         when(orderPersistencePort.getOrderById(3L)).thenReturn(java.util.Optional.of(order));
         when(employeeRestaurantPersistencePort.isEmployeeFromRestaurant(9L, 10L)).thenReturn(true);
+        when(userServicePort.getUserById(1L)).thenReturn(clientUser);
 
         orderService.markOrderAsDelivered(3L, "123456", 9L);
 
@@ -186,6 +212,7 @@ class OrderServiceTest {
         order.setClientId(1L);
 
         when(orderPersistencePort.getOrderById(5L)).thenReturn(java.util.Optional.of(order));
+        when(userServicePort.getUserById(1L)).thenReturn(clientUser);
 
         orderService.cancelOrder(5L, 1L);
 
@@ -277,6 +304,7 @@ class OrderServiceTest {
         when(restaurantServicePort.getRestaurantById(10L)).thenReturn(restaurant);
         when(orderPersistencePort.hasActiveOrderForClient(eq(1L), anyCollection())).thenReturn(false);
         when(dishServicePort.getDishesByIds(anyList())).thenReturn(List.of(dish));
+        when(userServicePort.getUserById(1L)).thenReturn(clientUser);
 
         order.setDate(null);
         orderService.createOrder(order, 1L);

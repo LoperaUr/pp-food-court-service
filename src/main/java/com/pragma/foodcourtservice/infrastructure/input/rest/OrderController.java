@@ -2,6 +2,7 @@ package com.pragma.foodcourtservice.infrastructure.input.rest;
 
 import com.pragma.foodcourtservice.application.dto.OrderDTO;
 import com.pragma.foodcourtservice.application.dto.PageResponseDTO;
+import com.pragma.foodcourtservice.application.dto.TraceabilityDTO;
 import com.pragma.foodcourtservice.application.handler.IOrderHandler;
 import com.pragma.foodcourtservice.domain.model.OrderStatus;
 import jakarta.validation.Valid;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/orders")
@@ -59,4 +62,11 @@ public class OrderController {
         orderHandler.cancelOrder(orderId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @GetMapping("/{orderId}/history")
+    public ResponseEntity<List<TraceabilityDTO>> getOrderHistory(@PathVariable Long orderId) {
+        List<TraceabilityDTO> traceability = orderHandler.getOrderHistory(orderId);
+        return ResponseEntity.ok(traceability);
+    }
+
 }

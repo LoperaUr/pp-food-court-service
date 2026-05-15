@@ -22,3 +22,6 @@ user-service:
 
 notification-service:
   url: http://localhost:8082
+
+traceability-service:
+  url: http://localhost:8083
