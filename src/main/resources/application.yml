@@ -1,0 +1,27 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: pp-food-court-service
+
+  datasource:
+    url: ${DB_URL}/food_court
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+      expiration: ${JWT_EXPIRATION}
+
+user-service:
+  url: ${USER_SERVICE_URL}
+
+notification-service:
+  url: ${NOTIFICATION_SERVICE_URL}
+
+traceability-service:
+  url: ${TRACEABILITY_SERVICE_URL}

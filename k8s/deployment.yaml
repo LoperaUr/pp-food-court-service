@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: food-court-service
+  labels:
+    app: food-court-service
+
+spec:
+  replicas: 0
+
+  selector:
+    matchLabels:
+      app: food-court-service
+
+  template:
+    metadata:
+      labels:
+        app: food-court-service
+
+    spec:
+      containers:
+        - name: food-court-service
+          image: pp-food-court-service:latest
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+
+          envFrom:
+            - secretRef:
+                name: shared-app-secret
+
+            - configMapRef:
+                name: shared-app-config
+
+      restartPolicy: Always
